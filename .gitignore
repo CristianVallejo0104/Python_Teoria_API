@@ -1,7 +1,3 @@
-.env
-*.env
-!.env.example
- 
 # Entornos virtuales
 venv/
 .venv/
@@ -10,34 +6,37 @@ __pycache__/
 *.pyc
 *.pyo
 *.pyd
-.Python
- 
+
+# Configuración
+.env
+*.env
+!.env.example
+
 # IDEs
 .vscode/
 .idea/
-*.swp
- 
+
 # Jupyter / IPython
 .ipynb_checkpoints/
 *.ipynb
- 
-# Archivos del sistema
-.DS_Store
-Thumbs.db
- 
+
 # Logs
 *.log
 logs/
- 
+
 # Distribución / build
 dist/
 build/
 *.egg-info/
- 
-# Caché de pytest
+
+# Tests / coverage
 .pytest_cache/
 .coverage
 htmlcov/
- 
+
 # Streamlit
 .streamlit/secrets.toml
+
+# Archivos del sistema
+.DS_Store
+Thumbs.db
