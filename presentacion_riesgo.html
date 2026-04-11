@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sustentación RiskLab USTA - Teoría del Riesgo</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:ital,wght@0,400;0,500&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0e1a;
+    --bg2: #0f1525;
+    --accent: #4f8ef7;
+    --accent2: #7c3aed;
+    --text: #e8edf8;
+    --text2: #8b9abf;
+    --border: rgba(79,142,247,0.2);
+    --glow: 0 0 40px rgba(79,142,247,0.15);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background-color: var(--bg);
+    color: var(--text);
+    overflow: hidden; /* Evita el scroll vertical */
+  }
+
+  h1, h2, h3 { font-family: 'Syne', sans-serif; }
+  
+  /* Contenedor principal del Slider */
+  .slider-container {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+  }
+
+  /* Estilo de cada diapositiva */
+  .slide {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+    transform: translateX(50px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 4rem;
+  }
+
+  .slide.active {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(0);
+  }
+
+  /* Contenido interno */
+  .content-box {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 3rem;
+    max-width: 1000px;
+    width: 100%;
+    box-shadow: var(--glow);
+  }
+
+  .title-slide { text-align: center; border: none; background: transparent; box-shadow: none; }
+  .title-slide h1 { font-size: 4rem; background: linear-gradient(90deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 1rem; }
+  .title-slide h2 { font-size: 1.5rem; color: var(--text2); font-weight: 400; margin-bottom: 3rem; }
+  
+  .badge {
+    display: inline-block;
+    padding: 8px 16px;
+    background: rgba(79,142,247,0.1);
+    color: var(--accent);
+    border-radius: 20px;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+    border: 1px solid var(--border);
+  }
+
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+  
+  .card {
+    background: rgba(255,255,255,0.03);
+    padding: 1.5rem;
+    border-radius: 16px;
+    border: 1px solid rgba(255,255,255,0.05);
+  }
+  .card h3 { color: var(--accent); margin-bottom: 0.5rem; display: flex; align-items: center; gap: 10px; }
+  .card ul { list-style: none; color: var(--text2); line-height: 1.8; }
+  .card ul li::before { content: "→ "; color: var(--accent2); }
+
+  /* Controles de Navegación */
+  .controls {
+    position: absolute;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    z-index: 100;
+  }
+
+  .btn-nav {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 1.2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.3s ease;
+  }
+
+  .btn-nav:hover { background: var(--accent); color: #fff; box-shadow: 0 0 15px var(--accent); }
+  
+  .progress { font-family: 'DM Mono', monospace; color: var(--text2); font-size: 1.1rem; }
+
+  /* Decoración */
+  .footer-text { position: absolute; bottom: 30px; right: 30px; font-family: 'DM Mono'; font-size: 0.8rem; color: var(--text2); }
+</style>
+</head>
+<body>
+
+<div class="slider-container" id="slider">
+  
+  <div class="slide active">
+    <div class="content-box title-slide">
+      <div class="badge">Sustentación Final - 2026</div>
+      <h1>RiskLab USTA</h1>
+      <h2>Proyecto Integrador: Teoría del Riesgo con APIs</h2>
+      <div style="color: var(--text2); font-size: 1.1rem; line-height: 1.8;">
+        <p><strong>Estudiante:</strong> Cristian Vallejo</p>
+        <p><strong>Docente:</strong> Javier Mauricio Sierra</p>
+        <p>Universidad Santo Tomás</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide">
+    <div class="content-box">
+      <div class="badge"><i class="fas fa-bullseye"></i> Objetivos del Proyecto</div>
+      <h2 style="font-size: 2.5rem; margin-bottom: 2rem;">¿Qué resolvimos?</h2>
+      <div class="grid-2">
+        <div class="card">
+          <h3><i class="fas fa-chart-line"></i> Análisis Cuantitativo</h3>
+          <ul>
+            <li>Cálculo en tiempo real de 6 indicadores técnicos.</li>
+            <li>Modelado de volatilidad condicional (ARCH/GARCH).</li>
+            <li>Pruebas empíricas de normalidad (Jarque-Bera).</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3><i class="fas fa-shield-alt"></i> Gestión de Riesgo</h3>
+          <ul>
+            <li>Cálculo de VaR y CVaR (Histórico, Paramétrico, Monte Carlo).</li>
+            <li>Optimización de Portafolios (Frontera de Markowitz).</li>
+            <li>Integración Macroeconómica (FRED).</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide">
+    <div class="content-box">
+      <div class="badge"><i class="fas fa-layer-group"></i> Ingeniería de Software</div>
+      <h2 style="font-size: 2.5rem; margin-bottom: 2rem;">Arquitectura Desacoplada</h2>
+      <div class="grid-2">
+        <div class="card" style="border-color: var(--accent);">
+          <h3><i class="fas fa-server"></i> Backend (FastAPI)</h3>
+          <ul>
+            <li><strong>Lógica aislada:</strong> Cálculos matemáticos y consumo de APIs.</li>
+            <li><strong>Pydantic:</strong> Validación estricta (ej. Pesos suman 100%).</li>
+            <li><strong>Rendimiento:</strong> Caché y endpoints asíncronos.</li>
+          </ul>
+        </div>
+        <div class="card" style="border-color: var(--accent2);">
+          <h3><i class="fas fa-desktop"></i> Frontend (Streamlit)</h3>
+          <ul>
+            <li><strong>Interactividad:</strong> Dashboard dinámico.</li>
+            <li><strong>Visualización:</strong> Gráficos interactivos con Plotly.</li>
+            <li><strong>UX:</strong> Navegación por módulos (Pestañas).</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide">
+    <div class="content-box">
+      <div class="badge"><i class="fas fa-database"></i> Integración de Datos</div>
+      <h2 style="font-size: 2.5rem; margin-bottom: 2rem;">Fuentes y Procesamiento</h2>
+      <div class="card" style="margin-bottom: 1.5rem;">
+        <h3><i class="fab fa-yahoo"></i> Yahoo Finance API (yfinance)</h3>
+        <p style="color: var(--text2); margin-top: 10px;">Extracción dinámica de series de tiempo financieras para un portafolio de activos tecnológicos (AAPL, MSFT, GOOGL, AMZN, TSLA).</p>
+      </div>
+      <div class="card">
+        <h3><i class="fas fa-landmark"></i> FRED API (Federal Reserve)</h3>
+        <p style="color: var(--text2); margin-top: 10px;">Consumo de datos macroeconómicos oficiales para nutrir el modelo CAPM (Tasa Libre de Riesgo) y contextualizar el tracking error del portafolio.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide">
+    <div class="content-box title-slide">
+      <div class="badge"><i class="fas fa-check-circle"></i> Resultados</div>
+      <h2 style="font-size: 3rem; color: #fff; margin-bottom: 1.5rem;">Proyecto 100% Funcional</h2>
+      <p style="color: var(--text2); font-size: 1.3rem; max-width: 700px; margin: 0 auto;">
+        Se cumplió a cabalidad con la rúbrica exigida, incorporando modelos financieros avanzados en un ecosistema de desarrollo moderno (Python 3.12). Las bonificaciones de arquitectura REST y señales macroeconómicas garantizan un producto de nivel profesional.
+      </p>
+      <div style="margin-top: 3rem; font-family: 'DM Mono'; color: var(--accent);">
+        ¡Gracias! ¿Preguntas?
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="controls">
+  <button class="btn-nav" id="btn-prev"><i class="fas fa-chevron-left"></i></button>
+  <div class="progress"><span id="current-slide">1</span> / <span id="total-slides">5</span></div>
+  <button class="btn-nav" id="btn-next"><i class="fas fa-chevron-right"></i></button>
+</div>
+
+<div class="footer-text">API Teoría del Riesgo · Python + FastAPI</div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const btnPrev = document.getElementById('btn-prev');
+  const btnNext = document.getElementById('btn-next');
+  const currentText = document.getElementById('current-slide');
+  let currentIndex = 0;
+
+  function updateSlider() {
+    slides.forEach((slide, index) => {
+      if(index === currentIndex) {
+        slide.classList.add('active');
+      } else {
+        slide.classList.remove('active');
+      }
+    });
+    currentText.innerText = currentIndex + 1;
+  }
+
+  function nextSlide() {
+    if (currentIndex < slides.length - 1) {
+      currentIndex++;
+      updateSlider();
+    }
+  }
+
+  function prevSlide() {
+    if (currentIndex > 0) {
+      currentIndex--;
+      updateSlider();
+    }
+  }
+
+  // Eventos de click en botones
+  btnNext.addEventListener('click', nextSlide);
+  btnPrev.addEventListener('click', prevSlide);
+
+  // Eventos de teclado (Flechas)
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight') {
+      nextSlide();
+    } else if (e.key === 'ArrowLeft') {
+      prevSlide();
+    }
+  });
+</script>
+
+</body>
+</html>
