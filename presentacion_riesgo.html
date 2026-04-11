@@ -132,35 +132,46 @@
       <div class="info-side">
         <div class="badge">backend/app/main.py</div>
         <h2>Diseño de la API REST</h2>
-        <p>El proyecto trasciende un simple script lineal. Implementé una <span class="highlight">arquitectura modular</span> basada en el patrón Modelo-Vista-Controlador (MVC) adaptado a microservicios.</p>
+        <p>La API se construyó con FastAPI usando una arquitectura modular. La app crea el `FastAPI` principal, configura CORS y monta routers especializados para cada dominio.</p>
         <ul>
-          <li><strong>Inyección de Dependencias:</strong> Uso de <code>Depends()</code> para aislar la lógica de configuración y clientes HTTP.</li>
-          <li><strong>APIRouter:</strong> División del dominio en submódulos lógicos (<code>/riesgo</code>, <code>/mercado</code>), evitando archivos monolíticos.</li>
-          <li><strong>Asincronismo:</strong> Endpoints definidos con <code>async def</code> para no bloquear el Event Loop al hacer peticiones a Yahoo Finance.</li>
+          <li><strong>Inyección de dependencias:</strong> `Depends(get_settings)` y `Depends(get_data_service)` separan configuración, servicios y controladores.</li>
+          <li><strong>Routers por dominio:</strong> `router_activos`, `router_precios`, `router_rendimientos`, `router_var`, `router_capm`, `router_macro`.</li>
+          <li><strong>Escalabilidad:</strong> los endpoints delegan en servicios como `DataService`, `RiskCalculator` y `MacroService`.</li>
         </ul>
       </div>
       <div class="code-window">
         <div class="code-header">
           <div class="mac-btn mac-close"></div><div class="mac-btn mac-min"></div><div class="mac-btn mac-max"></div>
-          <span class="code-title">main.py - Estructura de Endpoints</span>
+          <span class="code-title">main.py - Estructura real</span>
         </div>
-        <pre><code><span class="c-kw">from</span> fastapi <span class="c-kw">import</span> FastAPI, APIRouter, Depends
-<span class="c-kw">from</span> app.config <span class="c-kw">import</span> Settings, get_settings
-<span class="c-kw">from</span> app.api.endpoints <span class="c-kw">import</span> riesgo, mercado
+        <pre><code><span class="c-kw">def</span> <span class="c-fn">create_app</span>() -> <span class="c-ty">FastAPI</span>:
+    settings = <span class="c-fn">get_settings</span>()
 
-app = <span class="c-fn">FastAPI</span>(title=<span class="c-st">"RiskLab USTA API"</span>)
-api_router = <span class="c-fn">APIRouter</span>()
+    app = <span class="c-fn">FastAPI</span>(
+        title=settings.app_name,
+        version=settings.app_version,
+        description=<span class="c-st">"API de análisis de riesgo financiero — Proyecto Integrador USTA."</span>,
+        docs_url=<span class="c-st">"/docs"</span>,
+        redoc_url=<span class="c-st">"/redoc"</span>,
+        debug=settings.debug,
+    )
 
-<span class="c-cm"># Modularidad: Enganchando sub-rutas</span>
-api_router.<span class="c-fn">include_router</span>(riesgo.router, prefix=<span class="c-st">"/riesgo"</span>)
-api_router.<span class="c-fn">include_router</span>(mercado.router, prefix=<span class="c-st">"/mercado"</span>)
+    app.add_middleware(
+        <span class="c-ty">CORSMiddleware</span>,
+        allow_origins=settings.cors_origins,
+        allow_credentials=<span class="c-kw">True</span>,
+        allow_methods=[<span class="c-st">"*"</span>],
+        allow_headers=[<span class="c-st">"*"</span>],
+    )
 
-<span class="c-cm"># Montando la API completa con un prefijo de versión</span>
-app.<span class="c-fn">include_router</span>(api_router, prefix=<span class="c-st">"/api/v1"</span>)
+    app.<span class="c-fn">include_router</span>(router_activos)
+    app.<span class="c-fn">include_router</span>(router_precios)
+    app.<span class="c-fn">include_router</span>(router_rendimientos)
+    app.<span class="c-fn">include_router</span>(router_var)
+    app.<span class="c-fn">include_router</span>(router_capm)
+    app.<span class="c-fn">include_router</span>(router_macro)
 
-<span class="c-dc">@app.get</span>(<span class="c-st">"/health"</span>)
-<span class="c-kw">async def</span> <span class="c-fn">health_check</span>(settings: <span class="c-ty">Settings</span> <span class="c-op">=</span> <span class="c-fn">Depends</span>(get_settings)):
-    <span class="c-kw">return</span> {<span class="c-st">"status"</span>: <span class="c-st">"ok"</span>, <span class="c-st">"version"</span>: settings.APP_VERSION}</code></pre>
+    <span class="c-kw">return</span> app</code></pre>
       </div>
     </div>
   </div>
@@ -170,31 +181,41 @@ app.<span class="c-fn">include_router</span>(api_router, prefix=<span class="c-s
       <div class="info-side">
         <div class="badge">backend/app/models.py</div>
         <h2>Pydantic: Validando la Teoría</h2>
-        <p>En Teoría del Riesgo, si los pesos de un portafolio no suman 100%, la optimización de Markowitz colapsa. Usé <span class="highlight">Decoradores de Pydantic</span> para blindar el modelo matemático.</p>
+        <p>En Teoría del Riesgo, si los pesos de un portafolio no suman 1.0, el cálculo de VaR es inválido. Usé validadores de Pydantic para garantizar consistencia antes de ejecutar el servicio.</p>
         <ul>
-          <li><strong>BaseModel:</strong> Tipado fuerte para <em>Requests</em> y <em>Responses</em>.</li>
-          <li><strong>@model_validator(mode='after'):</strong> Este decorador se ejecuta automáticamente <em>después</em> de instanciar la clase.</li>
-          <li><strong>Protección Lógica:</strong> Rechaza la petición (Error 422) antes de que toque los motores de cálculo, ahorrando procesamiento.</li>
+          <li><strong>BaseModel:</strong> define `VaRRequest`, `VaRResultado` y `VaRResponse`.</li>
+          <li><strong>@field_validator:</strong> normaliza tickers y valida que todos los pesos sean mayores o iguales a cero.</li>
+          <li><strong>@model_validator(mode="after"):</strong> asegura que `len(tickers) == len(pesos)` y que la suma de pesos sea 1.0 con tolerancia ±0.01.</li>
         </ul>
       </div>
       <div class="code-window">
         <div class="code-header">
           <div class="mac-btn mac-close"></div><div class="mac-btn mac-min"></div><div class="mac-btn mac-max"></div>
-          <span class="code-title">models.py - Decoradores</span>
+          <span class="code-title">models.py - Validación de VaR</span>
         </div>
-        <pre><code><span class="c-kw">from</span> pydantic <span class="c-kw">import</span> BaseModel, model_validator
-<span class="c-kw">from</span> typing <span class="c-kw">import</span> <span class="c-ty">List</span>
+        <pre><code><span class="c-kw">class</span> <span class="c-ty">VaRRequest</span>(BaseModel):
+    tickers: list[<span class="c-ty">str</span>] = Field(...)
+    pesos: list[<span class="c-ty">float</span>] = Field(...)
+    nivel_confianza: float = Field(default=<span class="c-nm">0.95</span>, ge=<span class="c-nm">0.90</span>, le=<span class="c-nm">0.999</span>)
 
-<span class="c-kw">class</span> <span class="c-ty">PortafolioRequest</span>(BaseModel):
-    activos: <span class="c-ty">List</span>[<span class="c-ty">str</span>]
-    pesos: <span class="c-ty">List</span>[<span class="c-ty">float</span>]
+    <span class="c-dc">@field_validator</span>(<span class="c-st">"tickers"</span>)
+    <span class="c-kw">def</span> <span class="c-fn">tickers_en_mayusculas</span>(cls, v: list[<span class="c-ty">str</span>]) -> list[<span class="c-ty">str</span>]:
+        <span class="c-kw">return</span> [t.<span class="c-fn">upper</span>().<span class="c-fn">strip</span>() for t in v]
 
-    <span class="c-dc">@model_validator</span>(mode=<span class="c-st">'after'</span>)
-    <span class="c-kw">def</span> <span class="c-fn">validar_pesos_markowitz</span>(self):
-        <span class="c-cm"># Lógica Core: Validar restricción presupuestaria</span>
-        suma_pesos = <span class="c-fn">sum</span>(self.pesos)
-        <span class="c-kw">if</span> <span class="c-fn">abs</span>(suma_pesos <span class="c-op">-</span> <span class="c-nm">1.0</span>) <span class="c-op">></span> <span class="c-nm">1e-4</span>:
-            <span class="c-kw">raise</span> <span class="c-ty">ValueError</span>(<span class="c-st">"Error: Los pesos deben sumar exactamente 1.0 (100%)"</span>)
+    <span class="c-dc">@field_validator</span>(<span class="c-st">"pesos"</span>)
+    <span class="c-kw">def</span> <span class="c-fn">pesos_positivos</span>(cls, v: list[<span class="c-ty">float</span>]) -> list[<span class="c-ty">float</span>]:
+        <span class="c-kw">if</span> <span class="c-fn">any</span>(p <span class="c-op"><</span> <span class="c-nm">0</span> <span class="c-kw">for</span> p <span class="c-op">in</span> v):
+            <span class="c-kw">raise</span> <span class="c-ty">ValueError</span>(<span class="c-st">"Todos los pesos deben ser mayores o iguales a 0."</span>)
+        <span class="c-kw">return</span> v
+
+    <span class="c-dc">@model_validator</span>(mode=<span class="c-st">"after"</span>)
+    <span class="c-kw">def</span> <span class="c-fn">validar_consistencia_portafolio</span>(self) -> <span class="c-ty">"VaRRequest"</span>:
+        <span class="c-kw">if</span> <span class="c-fn">len</span>(self.tickers) <span class="c-op">!=</span> <span class="c-fn">len</span>(self.pesos):
+            <span class="c-kw">raise</span> <span class="c-ty">ValueError</span>(<span class="c-st">"La cantidad de tickers debe coincidir con la cantidad de pesos."</span>)
+
+        <span class="c-nm">suma</span> = <span class="c-fn">sum</span>(self.pesos)
+        <span class="c-kw">if</span> <span class="c-fn">abs</span>(suma <span class="c-op">-</span> <span class="c-nm">1.0</span>) <span class="c-op">></span> <span class="c-nm">0.01</span>:
+            <span class="c-kw">raise</span> <span class="c-ty">ValueError</span>(<span class="c-st">f"Los pesos deben sumar 1.0. Suma actual: {suma:.4f}."</span>)
         <span class="c-kw">return</span> self</code></pre>
       </div>
     </div>
@@ -205,32 +226,33 @@ app.<span class="c-fn">include_router</span>(api_router, prefix=<span class="c-s
       <div class="info-side">
         <div class="badge">backend/app/services.py</div>
         <h2>Ingesta y Limpieza de Series</h2>
-        <p>El Módulo 1 requiere obtener datos de mínimo 5 activos. Desarrollé el <code>DataService</code> utilizando <span class="highlight">Pandas</span> para transformar los datos crudos de la API en información modelable.</p>
+        <p>El servicio `DataService` descarga precios ajustados de Yahoo Finance, normaliza columnas y construye rendimientos simples y logarítmicos listos para el cálculo de riesgo.</p>
         <ul>
-          <li><strong>Vectorización:</strong> Uso de operaciones vectorizadas (<code>np.log</code>) en lugar de bucles <code>for</code> para máxima eficiencia.</li>
-          <li><strong>Rendimientos Continuos:</strong> Cálculo matemático del diferencial logarítmico.</li>
-          <li><strong>Manejo de NaNs:</strong> Limpieza automatizada de días no bursátiles (feriados) usando <code>.dropna()</code>.</li>
+          <li><strong>Auto-ajustado:</strong> descarga OHLCV con `auto_adjust=True` para incluir splits y dividendos.</li>
+          <li><strong>Retornos log:</strong> `np.log(cierre / cierre.shift(1))` para cumplir con las propiedades de aditividad temporal.</li>
+          <li><strong>Limpieza:</strong> `ffill()` y `dropna()` eliminan huecos por fines de semana y feriados.</li>
         </ul>
       </div>
       <div class="code-window">
         <div class="code-header">
           <div class="mac-btn mac-close"></div><div class="mac-btn mac-min"></div><div class="mac-btn mac-max"></div>
-          <span class="code-title">services.py - DataService</span>
+          <span class="code-title">services.py - Cálculo de rendimientos</span>
         </div>
-        <pre><code><span class="c-kw">import</span> yfinance <span class="c-kw">as</span> yf
-<span class="c-kw">import</span> pandas <span class="c-kw">as</span> pd
-<span class="c-kw">import</span> numpy <span class="c-kw">as</span> np
+        <pre><code><span class="c-kw">def</span> <span class="c-fn">get_rendimientos</span>(
+    self,
+    ticker: <span class="c-ty">str</span>,
+    fecha_inicio: Optional[date] = <span class="c-kw">None</span>,
+    fecha_fin: Optional[date] = <span class="c-kw">None</span>,
+) -> pd.DataFrame:
+    df_precios = self.<span class="c-fn">get_precios</span>(ticker, fecha_inicio, fecha_fin)
+    cierre = df_precios[<span class="c-st">"cierre"</span>]
 
-<span class="c-kw">class</span> <span class="c-ty">DataService</span>:
-    <span class="c-kw">async def</span> <span class="c-fn">get_market_data</span>(self, tickers: <span class="c-ty">List</span>[<span class="c-ty">str</span>], period: <span class="c-ty">str</span> <span class="c-op">=</span> <span class="c-st">"3y"</span>):
-        <span class="c-cm"># Descarga masiva de múltiples activos</span>
-        data = yf.<span class="c-fn">download</span>(tickers, period=period)[<span class="c-st">'Close'</span>]
-        
-        <span class="c-cm"># Cálculo Vectorizado de Retornos Logarítmicos: ln(Pt / Pt-1)</span>
-        returns = np.<span class="c-fn">log</span>(data <span class="c-op">/</span> data.<span class="c-fn">shift</span>(<span class="c-nm">1</span>))
-        
-        <span class="c-cm"># Limpieza de valores nulos del primer día</span>
-        <span class="c-kw">return</span> returns.<span class="c-fn">dropna</span>()</code></pre>
+    df_rend = pd.DataFrame(index=cierre.index)
+    df_rend[<span class="c-st">"rendimiento_simple"</span>] = cierre.<span class="c-fn">pct_change</span>()
+    df_rend[<span class="c-st">"rendimiento_log"</span>] = np.<span class="c-fn">log</span>(cierre / cierre.<span class="c-fn">shift</span>(<span class="c-nm">1</span>))
+
+    df_rend = df_rend.<span class="c-fn">dropna</span>()
+    <span class="c-kw">return</span> df_rend</code></pre>
       </div>
     </div>
   </div>
@@ -238,38 +260,36 @@ app.<span class="c-fn">include_router</span>(api_router, prefix=<span class="c-s
   <div class="slide">
     <div class="content-box grid-split">
       <div class="info-side">
-        <div class="badge">Requisito 3: Propiedades Empíricas</div>
+        <div class="badge">backend/app/services.py</div>
         <h2>Estadística Descriptiva y Pruebas</h2>
-        <p>Para evaluar el riesgo, primero hay que entender la distribución. Usando <code>scipy.stats</code>, el backend ejecuta pruebas estadísticas formales para detectar <span class="highlight">colas pesadas y asimetría</span>.</p>
+        <p>Antes de medir riesgo se evalúa si los rendimientos cumplen la hipótesis de normalidad. El backend usa `Jarque-Bera` y `Shapiro-Wilk` para detectar cola pesada y asimetría.</p>
         <ul>
-          <li><strong>Momentos:</strong> Media, Varianza, Asimetría (Skew) y Curtosis (Kurtosis).</li>
-          <li><strong>Jarque-Bera (JB):</strong> Prueba de bondad de ajuste que evalúa si la asimetría y la curtosis corresponden a una Normal.</li>
-          <li><strong>Shapiro-Wilk:</strong> Validación cruzada de la normalidad para muestras específicas.</li>
+          <li><strong>Momentos clave:</strong> media, desviación estándar, asimetría y curtosis.</li>
+          <li><strong>Prueba JB:</strong> compara asimetría y curtosis con la distribución normal.</li>
+          <li><strong>Shapiro-Wilk:</strong> refuerza la conclusión de normalidad en la muestra.</li>
         </ul>
       </div>
       <div class="code-window">
         <div class="code-header">
           <div class="mac-btn mac-close"></div><div class="mac-btn mac-min"></div><div class="mac-btn mac-max"></div>
-          <span class="code-title">services.py - Pruebas Estadísticas</span>
+          <span class="code-title">services.py - Pruebas de normalidad</span>
         </div>
-        <pre><code><span class="c-kw">from</span> scipy.stats <span class="c-kw">import</span> skew, kurtosis, jarque_bera, shapiro
+        <pre><code><span class="c-kw">def</span> <span class="c-fn">calcular_estadisticas</span>(self, rendimientos: pd.Series) -> dict:
+    jb_stat, jb_pvalue = stats.<span class="c-fn">jarque_bera</span>(rendimientos.dropna())
 
-<span class="c-kw">def</span> <span class="c-fn">calcular_estadisticas</span>(self, serie_retornos):
-    <span class="c-cm"># Análisis de forma de la distribución</span>
-    asimetria = <span class="c-fn">skew</span>(serie_retornos)
-    curt_exceso = <span class="c-fn">kurtosis</span>(serie_retornos) <span class="c-cm"># Base 3</span>
-    
-    <span class="c-cm"># Prueba Jarque-Bera</span>
-    jb_stat, jb_p_value = <span class="c-fn">jarque_bera</span>(serie_retornos)
-    
-    <span class="c-cm"># Interpretación algorítmica para el Frontend</span>
-    es_normal_jb = <span class="c-ty">True</span> <span class="c-kw">if</span> jb_p_value <span class="c-op">></span> <span class="c-nm">0.05</span> <span class="c-kw">else</span> <span class="c-ty">False</span>
-    
+    muestra_sw = rendimientos.dropna()
+    <span class="c-kw">if</span> <span class="c-fn">len</span>(muestra_sw) > <span class="c-nm">5000</span>:
+        muestra_sw = muestra_sw.<span class="c-fn">sample</span>(<span class="c-nm">5000</span>, random_state=<span class="c-nm">42</span>)
+    sw_stat, sw_pvalue = stats.<span class="c-fn">shapiro</span>(muestra_sw)
+
     <span class="c-kw">return</span> {
-        <span class="c-st">"asimetria"</span>: asimetria,
-        <span class="c-st">"curtosis"</span>: curt_exceso,
-        <span class="c-st">"p_value_jb"</span>: jb_p_value,
-        <span class="c-st">"distribucion_normal"</span>: es_normal_jb
+        <span class="c-st">"media"</span>: float(rendimientos.mean()),
+        <span class="c-st">"desviacion_std"</span>: float(rendimientos.std()),
+        <span class="c-st">"asimetria"</span>: float(rendimientos.skew()),
+        <span class="c-st">"curtosis"</span>: float(rendimientos.kurtosis()),
+        <span class="c-st">"jarque_bera_pvalue"</span>: float(jb_pvalue),
+        <span class="c-st">"shapiro_wilk_pvalue"</span>: float(sw_pvalue),
+        <span class="c-st">"es_normal"</span>: bool(jb_pvalue > <span class="c-nm">0.05</span> <span class="c-op">and</span> sw_pvalue > <span class="c-nm">0.05</span>),
     }</code></pre>
       </div>
     </div>
@@ -278,36 +298,43 @@ app.<span class="c-fn">include_router</span>(api_router, prefix=<span class="c-s
   <div class="slide">
     <div class="content-box grid-split">
       <div class="info-side">
-        <div class="badge">Requisito 5: VaR y CVaR</div>
+        <div class="badge">backend/app/services.py</div>
         <h2>Motores de Cálculo de Riesgo</h2>
-        <p>El corazón matemático del proyecto. La clase <code>RiskCalculator</code> consolida 3 metodologías distintas para estimar la <span class="highlight">Máxima Pérdida Esperada (VaR)</span> y el Expected Shortfall.</p>
+        <p>La clase `RiskCalculator` ejecuta los tres métodos de VaR y recomienda el más robusto según las propiedades reales de los rendimientos.</p>
         <ul>
-          <li><strong>VaR Paramétrico:</strong> Usa <code>norm.ppf()</code> (función de punto porcentual) asumiendo campana de Gauss.</li>
-          <li><strong>VaR Histórico:</strong> Uso empírico de <code>np.percentile()</code> sobre la historia real.</li>
-          <li><strong>CVaR (Expected Shortfall):</strong> Promedio condicional de las pérdidas que superan el umbral del VaR.</li>
+          <li><strong>VaR paramétrico:</strong> asume normalidad e implementa la raíz del tiempo.</li>
+          <li><strong>VaR histórico:</strong> usa el percentil empírico de la distribución real.</li>
+          <li><strong>VaR Monte Carlo:</strong> simula <code>n_simulaciones=10_000</code> escenarios para capturar extremos.</li>
         </ul>
       </div>
       <div class="code-window">
         <div class="code-header">
           <div class="mac-btn mac-close"></div><div class="mac-btn mac-min"></div><div class="mac-btn mac-max"></div>
-          <span class="code-title">services.py - RiskCalculator</span>
+          <span class="code-title">services.py - Selección de método</span>
         </div>
-        <pre><code><span class="c-kw">from</span> scipy.stats <span class="c-kw">import</span> norm
+        <pre><code><span class="c-kw">def</span> <span class="c-fn">calcular_var_completo</span>(
+    self,
+    rendimientos_portafolio: pd.Series,
+    nivel_confianza: float = <span class="c-nm">0.95</span>,
+    horizonte_dias: int = <span class="c-nm">1</span>,
+    valor_portafolio: float = <span class="c-nm">10_000.0</span>,
+) -> dict:
+    resultados = [
+        self.<span class="c-fn">var_parametrico</span>(rendimientos_portafolio, nivel_confianza, horizonte_dias, valor_portafolio),
+        self.<span class="c-fn">var_historico</span>(rendimientos_portafolio, nivel_confianza, horizonte_dias, valor_portafolio),
+        self.<span class="c-fn">var_montecarlo</span>(rendimientos_portafolio, nivel_confianza, horizonte_dias, valor_portafolio),
+    ]
 
-<span class="c-kw">class</span> <span class="c-ty">RiskCalculator</span>:
-    <span class="c-kw">def</span> <span class="c-fn">var_parametrico</span>(self, retornos, alpha=<span class="c-nm">0.05</span>):
-        <span class="c-cm"># Inversa de la función de distribución acumulada (Z-score)</span>
-        z_score = norm.<span class="c-fn">ppf</span>(alpha)
-        <span class="c-kw">return</span> np.<span class="c-fn">mean</span>(retornos) <span class="c-op">+</span> (z_score <span class="c-op">*</span> np.<span class="c-fn">std</span>(retornos))
-        
-    <span class="c-kw">def</span> <span class="c-fn">var_historico</span>(self, retornos, alpha=<span class="c-nm">0.05</span>):
-        <span class="c-cm"># Búsqueda del cuantil empírico real</span>
-        <span class="c-kw">return</span> np.<span class="c-fn">percentile</span>(retornos, alpha <span class="c-op">*</span> <span class="c-nm">100</span>)
-        
-    <span class="c-kw">def</span> <span class="c-fn">cvar_historico</span>(self, retornos, alpha=<span class="c-nm">0.05</span>):
-        <span class="c-cm"># Filtro booleano: Promedio de la cola izquierda extrema</span>
-        var = self.<span class="c-fn">var_historico</span>(retornos, alpha)
-        <span class="c-kw">return</span> retornos[retornos <span class="c-op"><=</span> var].<span class="c-fn">mean</span>()</code></pre>
+    _, jb_pvalue = stats.<span class="c-fn">jarque_bera</span>(rendimientos_portafolio.dropna())
+    <span class="c-kw">if</span> jb_pvalue > <span class="c-nm">0.05</span>:
+        recomendado = <span class="c-st">"parametrico"</span>
+    <span class="c-kw">else</span>:
+        recomendado = <span class="c-st">"historico"</span>
+
+    <span class="c-kw">return</span> {
+        <span class="c-st">"resultados"</span>: resultados,
+        <span class="c-st">"mejor_metodo_recomendado"</span>: recomendado,
+    }</code></pre>
       </div>
     </div>
   </div>
@@ -315,32 +342,32 @@ app.<span class="c-fn">include_router</span>(api_router, prefix=<span class="c-s
   <div class="slide">
     <div class="content-box grid-split">
       <div class="info-side">
-        <div class="badge">Requisito 6, 7 y Bono</div>
-        <h2>CAPM, Markowitz y Macroeconomía</h2>
-        <p>No usamos datos estáticos ("quemados"). La API se conecta al <span class="highlight">Federal Reserve Economic Data (FRED)</span> para obtener la Tasa Libre de Riesgo (US Treasuries de 10 años) dinámica.</p>
+        <div class="badge">backend/app/services.py</div>
+        <h2>GARCH, CAPM y FRED</h2>
+        <p>El backend no solo calcula VaR; también ajusta modelos de volatilidad condicional y consume datos macro desde FRED para obtener tasas libres de riesgo dinámicas.</p>
         <ul>
-          <li><strong>Beta (β):</strong> Covarianza del activo vs. mercado / Varianza del mercado.</li>
-          <li><strong>Markowitz:</strong> Construcción de la matriz de varianzas-covarianzas para simular portafolios eficientes.</li>
-          <li><strong>Tracking Error:</strong> Comparativa algorítmica del Ratio de Sharpe del portafolio vs Benchmark (^GSPC).</li>
+          <li><strong>GARCHService:</strong> ajusta `ARCH(1)`, `GARCH(1,1)` y `EGARCH(1,1)` y compara AIC/BIC.</li>
+          <li><strong>MacroService:</strong> obtiene tasa libre de riesgo desde `DGS3MO` y mide inflación con `CPIAUCSL`.</li>
+          <li><strong>CAPM/Markowitz:</strong> los resultados se integran con el dashboard para explicar Beta, Alpha y portafolios eficientes.</li>
         </ul>
       </div>
       <div class="code-window">
         <div class="code-header">
           <div class="mac-btn mac-close"></div><div class="mac-btn mac-min"></div><div class="mac-btn mac-max"></div>
-          <span class="code-title">services.py - Macro Integrations</span>
+          <span class="code-title">services.py - FRED y volatilidad</span>
         </div>
-        <pre><code><span class="c-kw">import</span> requests
+        <pre><code><span class="c-kw">async def</span> <span class="c-fn">get_tasa_libre_riesgo</span>(self) -> <span class="c-ty">float</span>:
+    observaciones = <span class="c-kw">await</span> self.fred_service.<span class="c-fn">get_series</span>(<span class="c-st">"DGS3MO"</span>, limit=<span class="c-nm">1</span>)
+    <span class="c-kw">if</span> <span class="c-kw">not</span> observaciones:
+        logger.warning(<span class="c-st">"Sin datos de FRED. Usando tasa por defecto 4.5%."</span>)
+        <span class="c-kw">return</span> <span class="c-nm">4.5</span>
 
-<span class="c-kw">class</span> <span class="c-ty">MacroService</span>:
-    <span class="c-kw">def</span> <span class="c-fn">get_risk_free_rate</span>(self):
-        <span class="c-cm"># Consumo de API Oficial (Bono del Proyecto)</span>
-        <span class="c-cm"># DGS10: 10-Year Treasury Constant Maturity Rate</span>
-        url = <span class="c-st">f"https://api.stlouisfed.org/fred/series/observations?series_id=DGS10..."</span>
-        resp = requests.<span class="c-fn">get</span>(url).<span class="c-fn">json</span>()
-        
-        <span class="c-cm"># Limpieza y conversión a formato decimal</span>
-        tasa_porcentual = <span class="c-fn">float</span>(resp[<span class="c-st">'observations'</span>][<span class="c-op">-</span><span class="c-nm">1</span>][<span class="c-st">'value'</span>])
-        <span class="c-kw">return</span> tasa_porcentual <span class="c-op">/</span> <span class="c-nm">100.0</span></code></pre>
+    <span class="c-kw">try</span>:
+        valor = <span class="c-kw">float</span>(observaciones[<span class="c-nm">0</span>][<span class="c-st">"value"</span>])
+        <span class="c-kw">return</span> valor
+    <span class="c-kw">except</span> (<span class="c-ty">ValueError</span>, <span class="c-ty">KeyError</span>, <span class="c-ty">IndexError</span>):
+        logger.warning(<span class="c-st">"Error parseando tasa de FRED. Usando 4.5%."</span>)
+        <span class="c-kw">return</span> <span class="c-nm">4.5</span></code></pre>
       </div>
     </div>
   </div>
@@ -350,35 +377,33 @@ app.<span class="c-fn">include_router</span>(api_router, prefix=<span class="c-s
       <div class="info-side">
         <div class="badge">frontend/app.py</div>
         <h2>El Consumidor: Streamlit</h2>
-        <p>Toda la matemática compleja queda encapsulada en el backend. El usuario final interactúa con un dashboard limpio que actúa como <span class="highlight">Cliente HTTP</span>.</p>
+        <p>La UI usa Streamlit como cliente HTTP. El frontend crea el payload, envía el request, y presenta los resultados de VaR/CVaR y los módulos de riesgos.</p>
         <ul>
-          <li><strong>Peticiones REST:</strong> Uso de <code>requests.post</code> para enviar el JSON de Pydantic al servidor.</li>
-          <li><strong>Renderizado:</strong> Gráficos de Plotly (Velas Japonesas, MACD, Frontera Eficiente) basados en la respuesta JSON.</li>
-          <li><strong>Conclusión:</strong> Un proyecto escalable, matemáticamente riguroso y con estándares profesionales de desarrollo de software.</li>
+          <li><strong>API helpers:</strong> `api_post()` encapsula `requests.post(..., json=body)` con manejo de errores.</li>
+          <li><strong>Validación visual:</strong> el dashboard advierte si los pesos no suman 1.0 antes de enviar la petición.</li>
+          <li><strong>Resultados:</strong> muestra `data_var["mejor_metodo_recomendado"]` y tabla con VaR/CVaR de cada método.</li>
         </ul>
       </div>
       <div class="code-window">
         <div class="code-header">
           <div class="mac-btn mac-close"></div><div class="mac-btn mac-min"></div><div class="mac-btn mac-max"></div>
-          <span class="code-title">app.py - Frontend Client</span>
+          <span class="code-title">app.py - Envío de VaR</span>
         </div>
-        <pre><code><span class="c-kw">import</span> streamlit <span class="c-kw">as</span> st
-<span class="c-kw">import</span> requests
+        <pre><code><span class="c-kw">if</span> st.<span class="c-fn">button</span>(<span class="c-st">"🔄 Calcular VaR y CVaR"</span>, key=<span class="c-st">"btn_var"</span>):
+    <span class="c-kw">with</span> st.<span class="c-fn">spinner</span>(<span class="c-st">"Calculando VaR (paramétrico, histórico y Monte Carlo)..."</span>):
+        body_var = {
+            <span class="c-st">"tickers"</span>: tickers,
+            <span class="c-st">"pesos"</span>: pesos,
+            <span class="c-st">"nivel_confianza"</span>: confianza_var,
+            <span class="c-st">"horizonte_dias"</span>: <span class="c-nm">1</span>,
+            <span class="c-st">"valor_portafolio"</span>: valor_portafolio,
+        }
+        data_var = api_post(<span class="c-st">"/var"</span>, body_var)
 
-<span class="c-cm"># 1. Preparar el Payload (Que será validado por Pydantic)</span>
-payload = {
-    <span class="c-st">"activos"</span>: [<span class="c-st">"AAPL"</span>, <span class="c-st">"MSFT"</span>], 
-    <span class="c-st">"pesos"</span>: [<span class="c-nm">0.5</span>, <span class="c-nm">0.5</span>]
-}
-
-<span class="c-cm"># 2. Consumo de la API interna</span>
-response = requests.<span class="c-fn">post</span>(<span class="c-st">f"{API_URL}/api/v1/riesgo/calcular"</span>, json=payload)
-
-<span class="c-cm"># 3. Renderizado de la UI</span>
-<span class="c-kw">if</span> response.status_code <span class="c-op">==</span> <span class="c-nm">200</span>:
-    datos = response.<span class="c-fn">json</span>()
-    st.<span class="c-fn">metric</span>(<span class="c-st">"VaR Paramétrico (95%)"</span>, <span class="c-st">f"{datos['var_par']:.2%}"</span>)
-    st.<span class="c-fn">success</span>(<span class="c-st">"Análisis completado exitosamente."</span>)</code></pre>
+    <span class="c-kw">if</span> data_var:
+        st.<span class="c-fn">success</span>(
+            f"Método recomendado: **{data_var['mejor_metodo_recomendado'].upper()}**"
+        )</code></pre>
       </div>
     </div>
   </div>
