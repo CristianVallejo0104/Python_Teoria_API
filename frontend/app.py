@@ -929,14 +929,16 @@ with tabs[7]:
                 mb = data_macro["metricas_benchmark"]
                 st.markdown(f"#### 📈 Portafolio vs {mb['benchmark_ticker']}")
  
-                ganó = mb["supera_benchmark"]
-                st.success(
-                    f"✅ El portafolio **superó** al benchmark (Sharpe portafolio "
-                    f"{mb['ratio_sharpe_portafolio']:.3f} > benchmark {mb['ratio_sharpe_benchmark']:.3f})"
-                ) if ganó else st.warning(
-                    f"⚠️ El portafolio **no superó** al benchmark (Sharpe portafolio "
-                    f"{mb['ratio_sharpe_portafolio']:.3f} < benchmark {mb['ratio_sharpe_benchmark']:.3f})"
-                )
+                if mb["supera_benchmark"]:
+                    st.success(
+                        f"✅ El portafolio **superó** al benchmark (Sharpe portafolio "
+                        f"{mb['ratio_sharpe_portafolio']:.3f} > benchmark {mb['ratio_sharpe_benchmark']:.3f})"
+                    )
+                else:
+                    st.warning(
+                        f"⚠️ El portafolio **no superó** al benchmark (Sharpe portafolio "
+                        f"{mb['ratio_sharpe_portafolio']:.3f} < benchmark {mb['ratio_sharpe_benchmark']:.3f})"
+                    )
  
                 col1, col2, col3, col4 = st.columns(4)
                 col1.metric("Rend. acumulado portafolio",
