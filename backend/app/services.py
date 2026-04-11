@@ -87,9 +87,35 @@ class DataService:
             )
  
         # Limpiar y renombrar columnas
-        df = df[["Open", "High", "Low", "Close", "Volume"]].copy()
-        df.columns = ["apertura", "maximo", "minimo", "cierre", "volumen"]
+        if isinstance(df.columns, pd.MultiIndex):
+            df.columns = df.columns.get_level_values(0)
+
+        # Normalizar nombres de columna a minúsculas para compatibilidad
+        df.columns = [str(c).strip() for c in df.columns]
+        col_map = {}
+        for c in df.columns:
+            cl = c.lower()
+            if cl == "open":        col_map[c] = "apertura"
+            elif cl == "high":      col_map[c] = "maximo"
+            elif cl == "low":       col_map[c] = "minimo"
+            elif cl == "close":     col_map[c] = "cierre"
+            elif cl == "volume":    col_map[c] = "volumen"
+        df = df.rename(columns=col_map)
+
+        cols_necesarias = ["apertura", "maximo", "minimo", "cierre", "volumen"]
+        cols_presentes = [c for c in cols_necesarias if c in df.columns]
+        if len(cols_presentes) < 4:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"Ticker '{ticker}' sin datos OHLCV válidos.",
+            )
+        df = df[cols_presentes].copy()
+        if "volumen" not in df.columns:
+            df["volumen"] = 0
+
         df.index = pd.to_datetime(df.index).normalize()
+        if df.index.tz is not None:
+            df.index = df.index.tz_localize(None)
         df.index.name = "fecha"
  
         # Estrategia de manejo de valores faltantes:
