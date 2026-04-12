@@ -847,14 +847,45 @@ with tabs[5]:
  
 with tabs[6]:
     st.subheader("🚦 Señales y Alertas de Trading")
- 
+
+    # INYECCIÓN DE CSS PARA ARREGLAR EL CONTRASTE
+    st.markdown("""
+        <style>
+        .semaforo-verde {
+            background-color: rgba(16, 185, 129, 0.15);
+            border: 1px solid #10b981;
+            padding: 15px;
+            border-radius: 8px;
+            color: #ffffff !important; /* Letra blanca */
+        }
+        .semaforo-rojo {
+            background-color: rgba(239, 68, 68, 0.15);
+            border: 1px solid #ef4444;
+            padding: 15px;
+            border-radius: 8px;
+            color: #ffffff !important; /* Letra blanca */
+        }
+        .semaforo-amarillo {
+            background-color: #fef08a; /* Fondo amarillo sólido */
+            border: 1px solid #facc15;
+            padding: 15px;
+            border-radius: 8px;
+            color: #1a1a1a !important; /* LETRA OSCURA PARA QUE SE LEA */
+        }
+        /* Forzar herencia a las etiquetas internas del amarillo */
+        .semaforo-amarillo strong, .semaforo-amarillo small {
+            color: #1a1a1a !important; 
+        }
+        </style>
+    """, unsafe_allow_html=True)
+
     if st.button("🔄 Generar señales", key="btn_alertas"):
         with st.spinner("Evaluando indicadores técnicos para cada activo..."):
             data_al = api_get("/alertas", params={"tickers": tickers})
- 
+
         if data_al:
             st.caption(f"Análisis al {data_al['fecha_analisis'][:19]}")
- 
+
             for activo in data_al["activos_analizados"]:
                 semaforo = activo["resumen_semaforo"]
                 clase_css = {
@@ -863,9 +894,9 @@ with tabs[6]:
                     "AMARILLO": "semaforo-amarillo",
                 }[semaforo]
                 emoji = {"VERDE": "🟢", "ROJO": "🔴", "AMARILLO": "🟡"}[semaforo]
- 
+
                 st.markdown(f"### {emoji} {activo['ticker']} — ${activo['precio_actual']:.2f}")
- 
+
                 # Tarjetas de semáforo
                 c1, c2, c3, c4 = st.columns([2, 1, 1, 1])
                 with c1:
@@ -879,7 +910,7 @@ with tabs[6]:
                 c2.metric("🟢 Compra", activo["señales_compra"])
                 c3.metric("🔴 Venta", activo["señales_venta"])
                 c4.metric("🟡 Neutral", activo["señales_neutral"])
- 
+
                 # Tabla de señales individuales
                 df_señales = pd.DataFrame([{
                     "Indicador": s["indicador"],
@@ -888,7 +919,7 @@ with tabs[6]:
                     "Valor": s["valor_actual"],
                     "Descripción": s["descripcion"],
                 } for s in activo["senales"]])
- 
+
                 st.dataframe(df_señales.set_index("Indicador"),
                              use_container_width=True)
                 st.markdown("---")
