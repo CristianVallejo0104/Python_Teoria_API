@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sustentación Magistral - RiskLab USTA</title>
+<title>Sustentación Técnica - RiskLab Proyecto Integrado USTA</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Fira+Code:wght@400;500;600&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 <style>
@@ -11,118 +11,80 @@
     --bg: #070b14;
     --bg2: #0d1323;
     --bg-code: #1e1e1e;
-    --accent: #ffb86c; /* Naranja/Dorado técnico */
-    --accent2: #bd93f9; /* Morado Dracula */
+    --accent: #ffb86c;
+    --accent2: #bd93f9;
     --text: #f8f8f2;
-    --text2: #8be9fd; /* Cyan suave para texto secundario */
+    --text2: #8be9fd;
     --border: rgba(189, 147, 249, 0.3);
     --glow: 0 0 40px rgba(189, 147, 249, 0.15);
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  
-  body {
-    font-family: 'DM Sans', sans-serif;
-    background-color: var(--bg);
-    color: var(--text);
-    overflow: hidden;
-  }
-
+  body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); overflow: hidden; }
   h1, h2, h3 { font-family: 'Syne', sans-serif; }
-  
   .slider-container { position: relative; width: 100vw; height: 100vh; }
-
-  .slide {
-    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-    opacity: 0; visibility: hidden;
-    transition: opacity 0.5s ease, transform 0.5s ease;
-    transform: translateX(50px);
-    display: flex; flex-direction: column; justify-content: center; align-items: center;
-    padding: 2rem;
-  }
-
+  .slide { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; visibility: hidden; transition: opacity 0.5s ease, transform 0.5s ease; transform: translateX(50px); display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 2rem; }
   .slide.active { opacity: 1; visibility: visible; transform: translateX(0); }
-
-  .content-box {
-    background: var(--bg2);
-    border: 1px solid var(--border);
-    border-radius: 24px;
-    padding: 2.5rem;
-    max-width: 1350px;
-    width: 100%;
-    box-shadow: var(--glow);
-    max-height: 90vh;
-    overflow-y: auto;
-  }
-
-  /* Scrollbar oculta pero funcional */
+  .content-box { background: var(--bg2); border: 1px solid var(--border); border-radius: 24px; padding: 2.5rem; max-width: 1350px; width: 100%; box-shadow: var(--glow); max-height: 90vh; overflow-y: auto; }
   .content-box::-webkit-scrollbar { width: 8px; }
-  .content-box::-webkit-scrollbar-track { background: transparent; }
   .content-box::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
-
-  .title-slide { text-align: center; border: none; background: transparent; box-shadow: none; }
-  .title-slide h1 { font-size: 4.5rem; background: linear-gradient(90deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 1rem; line-height: 1.1;}
-  .title-slide h2 { font-size: 1.8rem; color: var(--text2); font-weight: 400; margin-bottom: 3rem; }
-  
-  .badge {
-    display: inline-block; padding: 6px 14px; background: rgba(189, 147, 249, 0.15); color: var(--accent2);
-    border-radius: 8px; font-family: 'Fira Code', monospace; font-size: 0.9rem; margin-bottom: 1rem; border: 1px solid var(--border);
-  }
-
+  .title-slide { text-align: center; background: transparent; box-shadow: none; }
+  .title-slide h1 { font-size: 4.5rem; background: linear-gradient(90deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 1rem; line-height: 1.1; }
+  .title-slide h2 { font-size: 1.8rem; color: var(--text2); font-weight: 400; margin-bottom: 2rem; }
+  .badge { display: inline-block; padding: 6px 14px; background: rgba(189, 147, 249, 0.15); color: var(--accent2); border-radius: 8px; font-family: 'Fira Code', monospace; font-size: 0.9rem; margin-bottom: 1rem; border: 1px solid var(--border); }
   .grid-split { display: grid; grid-template-columns: 1fr 1.2fr; gap: 3rem; align-items: start; }
-  
   .info-side h2 { font-size: 2.2rem; margin-bottom: 1.2rem; color: #fff; }
   .info-side p { color: #b9c4d8; font-size: 1.1rem; line-height: 1.6; margin-bottom: 1.2rem; }
-  .info-side ul { list-style: none; color: #e2e8f0; line-height: 1.8; font-size: 1.05rem;}
+  .info-side ul { list-style: none; color: #e2e8f0; line-height: 1.8; font-size: 1.05rem; }
   .info-side ul li { margin-bottom: 10px; padding-left: 25px; position: relative; }
-  .info-side ul li::before { content: "/>"; color: var(--accent); position: absolute; left: 0; font-family: 'Fira Code'; font-weight: bold; }
+  .info-side ul li::before { content: '/>'; color: var(--accent); position: absolute; left: 0; font-family: 'Fira Code'; font-weight: bold; }
   .highlight { color: var(--accent); font-weight: 600; }
-
-  /* Bloque de código VS Code Style */
-  .code-window {
-    background: var(--bg-code); border-radius: 12px; border: 1px solid #333; overflow: hidden;
-    box-shadow: 0 20px 40px rgba(0,0,0,0.6);
-  }
-  .code-header {
-    background: #252526; padding: 12px 15px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid #333;
-  }
+  .code-window { background: var(--bg-code); border-radius: 12px; border: 1px solid #333; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.6); }
+  .code-header { background: #252526; padding: 12px 15px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid #333; }
   .mac-btn { width: 12px; height: 12px; border-radius: 50%; }
   .mac-close { background: #ff5f56; } .mac-min { background: #ffbd2e; } .mac-max { background: #27c93f; }
   .code-title { color: #8b9abf; font-family: 'Fira Code', monospace; font-size: 0.85rem; margin-left: 10px; }
-  
-  pre { margin: 0; padding: 1.5rem; overflow-x: auto; }
-  code { font-family: 'Fira Code', monospace; font-size: 0.95rem; line-height: 1.5; color: #f8f8f2; }
-  
-  /* Sintaxis Dracula Theme */
-  .c-kw { color: #ff79c6; } /* keyword */
-  .c-fn { color: #50fa7b; } /* function */
-  .c-st { color: #f1fa8c; } /* string */
-  .c-cm { color: #6272a4; font-style: italic; } /* comment */
-  .c-ty { color: #8be9fd; font-style: italic; } /* type/class */
-  .c-nm { color: #bd93f9; } /* number */
-  .c-dc { color: #ffb86c; } /* decorator */
-  .c-op { color: #ff79c6; } /* operator */
-
+  pre { margin: 0; padding: 1.5rem; overflow-x: auto; font-size: 0.85rem; }
+  code { font-family: 'Fira Code', monospace; line-height: 1.5; color: #f8f8f2; }
+  .c-kw { color: #ff79c6; }
+  .c-fn { color: #50fa7b; }
+  .c-st { color: #f1fa8c; }
+  .c-cm { color: #6272a4; font-style: italic; }
+  .c-ty { color: #8be9fd; font-style: italic; }
+  .c-nm { color: #bd93f9; }
+  .c-dc { color: #ffb86c; }
+  .c-op { color: #ff79c6; }
+  .c-np { color: #8be9fd; }
+  table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+  th, td { border: 1px solid rgba(255,255,255,0.08); padding: 0.75rem 1rem; text-align: left; font-size: 0.9rem; }
+  th { background: rgba(189, 147, 249, 0.12); }
+  .section-icon { margin-right: 0.6rem; color: var(--accent); }
   .controls { position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); display: flex; gap: 20px; align-items: center; z-index: 100; }
   .btn-nav { background: var(--bg2); border: 1px solid var(--border); color: var(--text); width: 50px; height: 50px; border-radius: 50%; cursor: pointer; font-size: 1.2rem; display: flex; justify-content: center; align-items: center; transition: all 0.3s ease; }
   .btn-nav:hover { background: var(--accent2); color: #fff; box-shadow: 0 0 15px var(--accent2); }
   .progress { font-family: 'Fira Code', monospace; color: var(--text2); font-size: 1.1rem; }
-  .footer-text { position: absolute; bottom: 30px; right: 30px; font-family: 'Fira Code'; font-size: 0.85rem; color: var(--text2); }
+  .footer-text { position: absolute; bottom: 30px; right: 30px; font-family: 'Fira Code'; font-size: 0.8rem; color: var(--text2); }
+  .formula { background: rgba(255, 184, 108, 0.1); border-left: 3px solid var(--accent); padding: 1rem; margin: 1rem 0; border-radius: 6px; font-family: 'Fira Code'; }
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 1.5rem; }
+  .col-content h3 { font-size: 1.2rem; color: var(--accent2); margin-bottom: 0.8rem; }
+  .col-content p { font-size: 0.95rem; color: #b9c4d8; line-height: 1.6; }
+  .content-box { max-width: 1400px; }
 </style>
 </head>
 <body>
 
 <div class="slider-container" id="slider">
-  
+
   <div class="slide active">
     <div class="content-box title-slide">
-      <div class="badge">Sustentación Proyecto Integrado  - 20261</div>
-      <h1>Arquitectura y Teoría<br>del Riesgo con APIs</h1>
-      <h2>Implementación Profunda de Modelos Matemáticos en FastAPI</h2>
-      <div style="color: #b9c4d8; font-size: 1.2rem; line-height: 1.8; margin-top: 2rem;">
+      <div class="badge"><i class="fas fa-rocket"></i> Sustentación Técnica</div>
+      <h1>RiskLab USTA</h1>
+      <h2> APIs y Teoría del Riesgo</h2>
+      <div style="color: #b9c4d8; font-size: 1.15rem; line-height: 1.8; margin-top: 3rem;">
         <p><strong>Desarrollador:</strong> Cristian Vallejo</p>
-        <p><strong>Docente:</strong> Javier Mauricio Sierra</p>
-        <p>Universidad Santo Tomás</p>
+        <p><strong>Materia:</strong> Teoría del Riesgo + Electiva Python APIs</p>
+        <p><strong>Tecnología Stack:</strong> FastAPI, Pydantic v2, yfinance, pandas, numpy, scipy, FRED API</p>
+        <p style="margin-top: 2rem; color: #8be9fd;"><em>"Arquitectura desacoplada, validación rigurosa y análisis cuantitativo en producción"</em></p>
       </div>
     </div>
   </div>
@@ -130,48 +92,36 @@
   <div class="slide">
     <div class="content-box grid-split">
       <div class="info-side">
-        <div class="badge">backend/app/main.py</div>
-        <h2>Diseño de la API REST</h2>
-        <p>La API se construyó con FastAPI usando una arquitectura modular. La app crea el `FastAPI` principal, configura CORS y monta routers especializados para cada dominio.</p>
+        <div class="badge"><i class="fas fa-sitemap"></i> Arquitectura</div>
+        <h2>Separación de Responsabilidades</h2>
+        <p>El proyecto adopta un modelo <strong>cliente-servidor</strong> con lógica desacoplada:</p>
         <ul>
-          <li><strong>Inyección de dependencias:</strong> `Depends(get_settings)` y `Depends(get_data_service)` separan configuración, servicios y controladores.</li>
-          <li><strong>Routers por dominio:</strong> `router_activos`, `router_precios`, `router_rendimientos`, `router_var`, `router_capm`, `router_macro`.</li>
-          <li><strong>Escalabilidad:</strong> los endpoints delegan en servicios como `DataService`, `RiskCalculator` y `MacroService`.</li>
+          <li><strong>Backend</strong> (FastAPI): cálculos científicos y validación de datos.</li>
+          <li><strong>Frontend</strong> (Streamlit): interfaz de usuario e interactividad.</li>
+          <li><strong>Models</strong>: Pydantic actúa como "aduana" de datos.</li>
+          <li><strong>Services</strong>: lógica matemática encapsulada en clases especializadas.</li>
         </ul>
+        <p style="margin-top: 1.5rem; color: #f1fa8c;">El frontend jamás instancia clases de negocio — todo fluye por HTTP/JSON validado.</p>
       </div>
       <div class="code-window">
         <div class="code-header">
           <div class="mac-btn mac-close"></div><div class="mac-btn mac-min"></div><div class="mac-btn mac-max"></div>
-          <span class="code-title">main.py - Estructura real</span>
+          <span class="code-title">Árbol del Proyecto</span>
         </div>
-        <pre><code><span class="c-kw">def</span> <span class="c-fn">create_app</span>() -> <span class="c-ty">FastAPI</span>:
-    settings = <span class="c-fn">get_settings</span>()
-
-    app = <span class="c-fn">FastAPI</span>(
-        title=settings.app_name,
-        version=settings.app_version,
-        description=<span class="c-st">"API de análisis de riesgo financiero — Proyecto Integrador USTA."</span>,
-        docs_url=<span class="c-st">"/docs"</span>,
-        redoc_url=<span class="c-st">"/redoc"</span>,
-        debug=settings.debug,
-    )
-
-    app.add_middleware(
-        <span class="c-ty">CORSMiddleware</span>,
-        allow_origins=settings.cors_origins,
-        allow_credentials=<span class="c-kw">True</span>,
-        allow_methods=[<span class="c-st">"*"</span>],
-        allow_headers=[<span class="c-st">"*"</span>],
-    )
-
-    app.<span class="c-fn">include_router</span>(router_activos)
-    app.<span class="c-fn">include_router</span>(router_precios)
-    app.<span class="c-fn">include_router</span>(router_rendimientos)
-    app.<span class="c-fn">include_router</span>(router_var)
-    app.<span class="c-fn">include_router</span>(router_capm)
-    app.<span class="c-fn">include_router</span>(router_macro)
-
-    <span class="c-kw">return</span> app</code></pre>
+        <pre><code><span class="c-st">Teoria_API/</span>
+├── backend/
+│   ├── app/
+│   │   ├── <span class="c-fn">main.py</span>          <span class="c-cm"># Aplicación FastAPI</span>
+│   │   ├── <span class="c-fn">models.py</span>        <span class="c-cm"># Pydantic (validación)</span>
+│   │   ├── <span class="c-fn">services.py</span>      <span class="c-cm"># Lógica matemática</span>
+│   │   ├── <span class="c-fn">config.py</span>       <span class="c-cm"># Configuración</span>
+│   │   └── <span class="c-fn">dependencies.py</span> <span class="c-cm"># Inyección</span>
+│   └── <span class="c-st">requirements.txt</span>
+├── frontend/
+│   ├── <span class="c-fn">app.py</span>         <span class="c-cm"># Dashboard Streamlit</span>
+│   └── <span class="c-st">requerimentsfrontend.txt</span>
+├── README.md
+└── <span class="c-st">presentacion_riesgo.html</span></code></pre>
       </div>
     </div>
   </div>
@@ -179,44 +129,95 @@
   <div class="slide">
     <div class="content-box grid-split">
       <div class="info-side">
-        <div class="badge">backend/app/models.py</div>
-        <h2>Pydantic: Validando la Teoría</h2>
-        <p>En Teoría del Riesgo, si los pesos de un portafolio no suman 1.0, el cálculo de VaR es inválido. Usé validadores de Pydantic para garantizar consistencia antes de ejecutar el servicio.</p>
+        <div class="badge"><i class="fas fa-layer-group"></i> Decoradores</div>
+        <h2>Decoradores FastAPI: Registradores de Rutas</h2>
+        <p>Los decoradores <span class="highlight">@router.post</span>, <span class="highlight">@router.get</span>, etc., transforman funciones en endpoints HTTP.</p>
         <ul>
-          <li><strong>BaseModel:</strong> define `VaRRequest`, `VaRResultado` y `VaRResponse`.</li>
-          <li><strong>@field_validator:</strong> normaliza tickers y valida que todos los pesos sean mayores o iguales a cero.</li>
-          <li><strong>@model_validator(mode="after"):</strong> asegura que `len(tickers) == len(pesos)` y que la suma de pesos sea 1.0 con tolerancia ±0.01.</li>
+          <li><strong>@router.get(path)</strong>: obtiene recursos (idempotente).</li>
+          <li><strong>@router.post(path)</strong>: crea/procesa recursos (no idempotente).</li>
+          <li><strong>response_model</strong>: schema de respuesta (validación + OpenAPI).</li>
+          <li><strong>async def</strong>: el decorador preserve el event loop — no bloques.</li>
         </ul>
+        <p style="margin-top: 1.2rem;">FastAPI auto-genera documentación en <code>/docs</code> (Swagger) y <code>/redoc</code> a partir de los decoradores.</p>
       </div>
       <div class="code-window">
         <div class="code-header">
           <div class="mac-btn mac-close"></div><div class="mac-btn mac-min"></div><div class="mac-btn mac-max"></div>
-          <span class="code-title">models.py - Validación de VaR</span>
+          <span class="code-title">main.py - Decoradores en acción</span>
         </div>
-        <pre><code><span class="c-kw">class</span> <span class="c-ty">VaRRequest</span>(BaseModel):
-    tickers: list[<span class="c-ty">str</span>] = Field(...)
-    pesos: list[<span class="c-ty">float</span>] = Field(...)
-    nivel_confianza: float = Field(default=<span class="c-nm">0.95</span>, ge=<span class="c-nm">0.90</span>, le=<span class="c-nm">0.999</span>)
+        <pre><code><span class="c-dc">@router_var</span>.<span class="c-fn">post</span>(
+    <span class="c-st">"/var"</span>,
+    response_model=<span class="c-ty">VaRResponse</span>,
+    summary=<span class="c-st">"VaR y CVaR del portafolio"</span>,
+    description=<span class="c-st">"Calcula value-at-risk..."</span>,
+)
+<span class="c-kw">async def</span> <span class="c-fn">calcular_var</span>(
+    body: <span class="c-ty">VaRRequest</span>,
+    data_service: <span class="c-ty">DataService</span> = <span class="c-fn">Depends</span>(<span class="c-fn">get_data_service</span>),
+    risk_calc: <span class="c-ty">RiskCalculator</span> = <span class="c-fn">Depends</span>(<span class="c-fn">get_risk_calculator</span>),
+):
+    <span class="c-cm"># async permite no bloquear mientras se obtienen datos</span>
+    df_rend = data_service.<span class="c-fn">get_rendimientos_multiples</span>(body.tickers)
+    resultado = risk_calc.<span class="c-fn">calcular_var_completo</span>(...)
+    <span class="c-kw">return</span> <span class="c-ty">VaRResponse</span>(...)</code></pre>
+      </div>
+    </div>
+  </div>
 
-    <span class="c-dc">@field_validator</span>(<span class="c-st">"tickers"</span>)
-    <span class="c-kw">def</span> <span class="c-fn">tickers_en_mayusculas</span>(cls, v: list[<span class="c-ty">str</span>]) -> list[<span class="c-ty">str</span>]:
-        <span class="c-kw">return</span> [t.<span class="c-fn">upper</span>().<span class="c-fn">strip</span>() for t in v]
+  <div class="slide">
+    <div class="content-box">
+      <div class="badge"><i class="fas fa-shield-alt"></i> Pydantic</div>
+      <h2>Aduana de Datos: Validación Antes del Cálculo</h2>
+      <p style="color: #b9c4d8; margin-bottom: 1.5rem;">Los modelos Pydantic en <span class="highlight">models.py</span> actúan como filtro transaccional: invalidan payloads inconsistentes antes de tocar la lógica matemática.</p>
+      
+      <div class="two-col">
+        <div class="col-content">
+          <h3>@field_validator</h3>
+          <p>Valida campos individuales. Se ejecuta <strong>antes</strong> que la validación de modelo completo.</p>
+          <p style="margin-top: 0.8rem;">Casos de uso:</p>
+          <ul style="color: #e2e8f0; margin-top: 0.5rem; margin-left: 1rem; font-size: 0.95rem;">
+            <li>Normalizar tickers a mayúsculas</li>
+            <li>Verificar que pesos sean ≥ 0</li>
+            <li>Trim de espacios en strings</li>
+          </ul>
+        </div>
+        <div class="col-content">
+          <h3>@model_validator(mode='after')</h3>
+          <p>Valida la consistencia <strong>entre campos</strong>, después de que todos fueron procesados.</p>
+          <p style="margin-top: 0.8rem;">Casos de uso:</p>
+          <ul style="color: #e2e8f0; margin-top: 0.5rem; margin-left: 1rem; font-size: 0.95rem;">
+            <li>len(tickers) == len(pesos)</li>
+            <li>∑ pesos = 1.0 ± 0.01</li>
+            <li>Lógica transversal</li>
+          </ul>
+        </div>
+      </div>
 
-    <span class="c-dc">@field_validator</span>(<span class="c-st">"pesos"</span>)
-    <span class="c-kw">def</span> <span class="c-fn">pesos_positivos</span>(cls, v: list[<span class="c-ty">float</span>]) -> list[<span class="c-ty">float</span>]:
-        <span class="c-kw">if</span> <span class="c-fn">any</span>(p <span class="c-op"><</span> <span class="c-nm">0</span> <span class="c-kw">for</span> p <span class="c-op">in</span> v):
-            <span class="c-kw">raise</span> <span class="c-ty">ValueError</span>(<span class="c-st">"Todos los pesos deben ser mayores o iguales a 0."</span>)
-        <span class="c-kw">return</span> v
+      <div class="code-window" style="margin-top: 2rem;">
+        <div class="code-header">
+          <div class="mac-btn mac-close"></div><div class="mac-btn mac-min"></div><div class="mac-btn mac-max"></div>
+          <span class="code-title">models.py - Validadores de VaRRequest</span>
+        </div>
+        <pre><code><span class="c-dc">@field_validator</span>(<span class="c-st">"tickers"</span>)
+<span class="c-kw">@classmethod</span>
+<span class="c-kw">def</span> <span class="c-fn">tickers_en_mayusculas</span>(cls, v: <span class="c-ty">list</span>[<span class="c-ty">str</span>]) <span class="c-op">-></span> <span class="c-ty">list</span>[<span class="c-ty">str</span>]:
+    <span class="c-kw">return</span> [t.<span class="c-fn">upper</span>().<span class="c-fn">strip</span>() <span class="c-kw">for</span> t <span class="c-kw">in</span> v]  <span class="c-cm"># Normaliza</span>
 
-    <span class="c-dc">@model_validator</span>(mode=<span class="c-st">"after"</span>)
-    <span class="c-kw">def</span> <span class="c-fn">validar_consistencia_portafolio</span>(self) -> <span class="c-ty">"VaRRequest"</span>:
-        <span class="c-kw">if</span> <span class="c-fn">len</span>(self.tickers) <span class="c-op">!=</span> <span class="c-fn">len</span>(self.pesos):
-            <span class="c-kw">raise</span> <span class="c-ty">ValueError</span>(<span class="c-st">"La cantidad de tickers debe coincidir con la cantidad de pesos."</span>)
+<span class="c-dc">@field_validator</span>(<span class="c-st">"pesos"</span>)
+<span class="c-kw">@classmethod</span>
+<span class="c-kw">def</span> <span class="c-fn">pesos_positivos</span>(cls, v: <span class="c-ty">list</span>[<span class="c-ty">float</span>]) <span class="c-op">-></span> <span class="c-ty">list</span>[<span class="c-ty">float</span>]:
+    <span class="c-kw">if</span> <span class="c-fn">any</span>(p <span class="c-op"><</span> <span class="c-nm">0</span> <span class="c-kw">for</span> p <span class="c-kw">in</span> v):
+        <span class="c-kw">raise</span> <span class="c-ty">ValueError</span>(<span class="c-st">"Todos los pesos ≥ 0"</span>)
+    <span class="c-kw">return</span> v
 
-        <span class="c-nm">suma</span> = <span class="c-fn">sum</span>(self.pesos)
-        <span class="c-kw">if</span> <span class="c-fn">abs</span>(suma <span class="c-op">-</span> <span class="c-nm">1.0</span>) <span class="c-op">></span> <span class="c-nm">0.01</span>:
-            <span class="c-kw">raise</span> <span class="c-ty">ValueError</span>(<span class="c-st">f"Los pesos deben sumar 1.0. Suma actual: {suma:.4f}."</span>)
-        <span class="c-kw">return</span> self</code></pre>
+<span class="c-dc">@model_validator</span>(mode=<span class="c-st">"after"</span>)
+<span class="c-kw">def</span> <span class="c-fn">validar_consistencia_portafolio</span>(self) <span class="c-op">-></span> <span class="c-st">"VaRRequest"</span>:
+    <span class="c-kw">if</span> <span class="c-fn">len</span>(self.tickers) <span class="c-op">!=</span> <span class="c-fn">len</span>(self.pesos):
+        <span class="c-kw">raise</span> <span class="c-ty">ValueError</span>(<span class="c-st">"len(tickers) != len(pesos)"</span>)
+    suma = <span class="c-fn">sum</span>(self.pesos)
+    <span class="c-kw">if</span> <span class="c-fn">abs</span>(suma <span class="c-op">-</span> <span class="c-nm">1.0</span>) <span class="c-op">></span> <span class="c-nm">0.01</span>:
+        <span class="c-kw">raise</span> <span class="c-ty">ValueError</span>(<span class="c-st">f"∑w={suma:.4f}, debe ser 1.0"</span>)
+    <span class="c-kw">return</span> self</code></pre>
       </div>
     </div>
   </div>
@@ -224,116 +225,209 @@
   <div class="slide">
     <div class="content-box grid-split">
       <div class="info-side">
-        <div class="badge">backend/app/services.py</div>
-        <h2>Ingesta y Limpieza de Series</h2>
-        <p>El servicio `DataService` descarga precios ajustados de Yahoo Finance, normaliza columnas y construye rendimientos simples y logarítmicos listos para el cálculo de riesgo.</p>
+        <div class="badge"><i class="fas fa-bolt"></i> Async/Await</div>
+        <h2>Programación Asíncrona en FastAPI</h2>
+        <p>Las funciones endpoint son <span class="highlight">async def</span>, lo que permite no bloquear el servidor mientras esperamos I/O (yfinance, FRED).</p>
         <ul>
-          <li><strong>Auto-ajustado:</strong> descarga OHLCV con `auto_adjust=True` para incluir splits y dividendos.</li>
-          <li><strong>Retornos log:</strong> `np.log(cierre / cierre.shift(1))` para cumplir con las propiedades de aditividad temporal.</li>
-          <li><strong>Limpieza:</strong> `ffill()` y `dropna()` eliminan huecos por fines de semana y feriados.</li>
+          <li><span class="highlight">async def</span>: cede el CPU a otras tareas mientras espera I/O.</li>
+          <li><span class="highlight">await</span>: punto donde se suspende y cede.</li>
+          <li><strong>Beneficio:</strong> múltiples clientes simultáneos sin threads.</li>
         </ul>
+        <p style="margin-top: 1.2rem;">En nuestro caso: mientras el hilo A descarga datos de yfinance, el hilo B sigue procesando cálculos de CAPM para otro usuario.</p>
+        <p style="margin-top: 1rem; color: #f1fa8c; font-size: 0.95rem;"><strong>Nota:</strong> En FastAPI, el <span class="c-fn">async</span> de yfinance y pandas detecta automáticamente si el código es CPU-bound vs I/O-bound.</p>
       </div>
       <div class="code-window">
         <div class="code-header">
           <div class="mac-btn mac-close"></div><div class="mac-btn mac-min"></div><div class="mac-btn mac-max"></div>
-          <span class="code-title">services.py - Cálculo de rendimientos</span>
+          <span class="code-title">main.py - Endpoint async</span>
+        </div>
+        <pre><code><span class="c-dc">@router_rendimientos</span>.<span class="c-fn">get</span>(
+    <span class="c-st">"/rendimientos/{ticker}"</span>,
+)
+<span class="c-kw">async def</span> <span class="c-fn">get_rendimientos</span>(
+    ticker: <span class="c-ty">ValidTickerDep</span>,
+    fecha_inicio: <span class="c-ty">Optional</span>[<span class="c-ty">date</span>] = <span class="c-fn">Query</span>(...),
+    data_service: <span class="c-ty">DataService</span> = <span class="c-fn">Depends</span>(<span class="c-fn">get_data_service</span>),
+):
+    <span class="c-cm"># Obtiene precios — NO bloquea el servidor</span>
+    df_rend = data_service.<span class="c-fn">get_rendimientos</span>(ticker, ...)
+    
+    <span class="c-cm"># Calcula estadísticas — CPU-bound pero rápido</span>
+    stats = data_service.<span class="c-fn">calcular_estadisticas</span>(...)
+    
+    <span class="c-kw">return</span> <span class="c-ty">RendimientosResponse</span>(...)
+
+<span class="c-cm"># Otros usuarios pueden hacer requests while esto se ejecuta</span></code></pre>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide">
+    <div class="content-box grid-split">
+      <div class="info-side">
+        <div class="badge"><i class="fas fa-database"></i> DataService</div>
+        <h2>Extracción e Higiene de Datos</h2>
+        <p><span class="highlight">DataService</span> en <span class="highlight">services.py</span> encapsula todas las llamadas a yfinance y aplica limpieza automática.</p>
+        <ul>
+          <li><strong>yfinance</strong>: descarga OHLCV desde Yahoo Finance.</li>
+          <li><strong>auto_adjust=True</strong>: precios ajustados por splits y dividendos.</li>
+          <li><strong>pandas</strong>: manejo de DataFrames, ffill() para gaps.</li>
+          <li><strong>numpy</strong>: cálculos vectorizados de rendimientos log.</li>
+        </ul>
+        <p style="margin-top: 1.2rem;"><strong>Rendimiento log:</strong> $r_t = \ln(P_t / P_{t-1})$ en lugar de simple. Propiedades mejor: aditividad temporal, estacionaridad.</p>
+      </div>
+      <div class="code-window">
+        <div class="code-header">
+          <div class="mac-btn mac-close"></div><div class="mac-btn mac-min"></div><div class="mac-btn mac-max"></div>
+          <span class="code-title">services.py - DataService.get_rendimientos()</span>
         </div>
         <pre><code><span class="c-kw">def</span> <span class="c-fn">get_rendimientos</span>(
-    self,
-    ticker: <span class="c-ty">str</span>,
-    fecha_inicio: Optional[date] = <span class="c-kw">None</span>,
-    fecha_fin: Optional[date] = <span class="c-kw">None</span>,
-) -> pd.DataFrame:
+    self, ticker: <span class="c-ty">str</span>, fecha_inicio=<span class="c-nm">None</span>, fecha_fin=<span class="c-nm">None</span>
+) <span class="c-op">-></span> <span class="c-ty">pd.DataFrame</span>:
+    <span class="c-st">"""Calcula rendimientos log a partir de precios."""</span>
     df_precios = self.<span class="c-fn">get_precios</span>(ticker, fecha_inicio, fecha_fin)
     cierre = df_precios[<span class="c-st">"cierre"</span>]
-
-    df_rend = pd.DataFrame(index=cierre.index)
-    df_rend[<span class="c-st">"rendimiento_simple"</span>] = cierre.<span class="c-fn">pct_change</span>()
-    df_rend[<span class="c-st">"rendimiento_log"</span>] = np.<span class="c-fn">log</span>(cierre / cierre.<span class="c-fn">shift</span>(<span class="c-nm">1</span>))
-
-    df_rend = df_rend.<span class="c-fn">dropna</span>()
-    <span class="c-kw">return</span> df_rend</code></pre>
+    
+    <span class="c-cm"># Rendimientos simples: R_t = (P_t - P_{t-1}) / P_{t-1}</span>
+    rend_simple = cierre.<span class="c-fn">pct_change</span>()
+    
+    <span class="c-cm"># Rendimientos logarítmicos: r_t = ln(P_t / P_{t-1})</span>
+    rend_log = <span class="c-np">np</span>.<span class="c-fn">log</span>(cierre / cierre.<span class="c-fn">shift</span>(<span class="c-nm">1</span>))
+    
+    df_rend = <span class="c-ty">pd</span>.<span class="c-fn">DataFrame</span>({
+        <span class="c-st">"rendimiento_simple"</span>: rend_simple,
+        <span class="c-st">"rendimiento_log"</span>: rend_log,
+    })
+    <span class="c-kw">return</span> df_rend.<span class="c-fn">dropna</span>()</code></pre>
       </div>
     </div>
   </div>
 
   <div class="slide">
-    <div class="content-box grid-split">
-      <div class="info-side">
-        <div class="badge">backend/app/services.py</div>
-        <h2>Estadística Descriptiva y Pruebas</h2>
-        <p>Antes de medir riesgo se evalúa si los rendimientos cumplen la hipótesis de normalidad. El backend usa `Jarque-Bera` y `Shapiro-Wilk` para detectar cola pesada y asimetría.</p>
-        <ul>
-          <li><strong>Momentos clave:</strong> media, desviación estándar, asimetría y curtosis.</li>
-          <li><strong>Prueba JB:</strong> compara asimetría y curtosis con la distribución normal.</li>
-          <li><strong>Shapiro-Wilk:</strong> refuerza la conclusión de normalidad en la muestra.</li>
-        </ul>
+    <div class="content-box">
+      <div class="badge"><i class="fas fa-chart-bar"></i> Estadística Descriptiva</div>
+      <h2>Pruebas de Normalidad: Jarque-Bera y Shapiro-Wilk</h2>
+      <p style="color: #b9c4d8; margin-bottom: 1.5rem;">Antes de usar VaR paramétrico, verificamos si los rendimientos siguen una distribución normal. En finanzas, casi siempre <strong>fallan</strong> (colas pesadas).</p>
+
+      <div class="two-col">
+        <div class="col-content">
+          <h3>Jarque-Bera (JB)</h3>
+          <div class="formula">
+            $$JB = n \left[ \frac{S^2}{6} + \frac{(K-3)^2}{24} \right]$$
+            <p style="font-size: 0.9rem; margin-top: 0.5rem; color: #b9c4d8;">Donde $S$ = asimetría, $K$ = curtosis</p>
+          </div>
+          <p><strong>H₀:</strong> Distribución es normal</p>
+          <p style="margin-top: 0.5rem;">Si p-value &lt; 0.05 → rechazamos normalidad (colas pesadas).</p>
+        </div>
+        <div class="col-content">
+          <h3>Shapiro-Wilk (SW)</h3>
+          <p>Prueba no paramétrica más potente para muestras pequeñas.</p>
+          <p style="margin-top: 0.8rem;"><strong>H₀:</strong> "Los datos provienen de una normal"</p>
+          <p style="margin-top: 0.5rem;">Más sensible a desviaciones que JB.</p>
+          <p style="margin-top: 0.5rem; color: #f1fa8c; font-size: 0.9rem;"><em>Limitado a max 5000 obs (eficiencia)</em></p>
+        </div>
       </div>
-      <div class="code-window">
+
+      <div class="code-window" style="margin-top: 1.5rem;">
         <div class="code-header">
           <div class="mac-btn mac-close"></div><div class="mac-btn mac-min"></div><div class="mac-btn mac-max"></div>
-          <span class="code-title">services.py - Pruebas de normalidad</span>
+          <span class="code-title">services.py - calcular_estadisticas()</span>
         </div>
-        <pre><code><span class="c-kw">def</span> <span class="c-fn">calcular_estadisticas</span>(self, rendimientos: pd.Series) -> dict:
-    jb_stat, jb_pvalue = stats.<span class="c-fn">jarque_bera</span>(rendimientos.dropna())
-
-    muestra_sw = rendimientos.dropna()
-    <span class="c-kw">if</span> <span class="c-fn">len</span>(muestra_sw) > <span class="c-nm">5000</span>:
-        muestra_sw = muestra_sw.<span class="c-fn">sample</span>(<span class="c-nm">5000</span>, random_state=<span class="c-nm">42</span>)
-    sw_stat, sw_pvalue = stats.<span class="c-fn">shapiro</span>(muestra_sw)
-
+        <pre><code><span class="c-kw">def</span> <span class="c-fn">calcular_estadisticas</span>(self, rendimientos: <span class="c-ty">pd.Series</span>) <span class="c-op">-></span> <span class="c-ty">dict</span>:
+    <span class="c-cm"># Prueba Jarque-Bera</span>
+    jb_stat, jb_pvalue = <span class="c-fn">stats</span>.<span class="c-fn">jarque_bera</span>(rendimientos.<span class="c-fn">dropna</span>())
+    
+    <span class="c-cm"># Prueba Shapiro-Wilk (máx 5000 obs)</span>
+    muestra = rendimientos.<span class="c-fn">dropna</span>()
+    <span class="c-kw">if</span> <span class="c-fn">len</span>(muestra) <span class="c-op">></span> <span class="c-nm">5000</span>:
+        muestra = muestra.<span class="c-fn">sample</span>(<span class="c-nm">5000</span>, random_state=<span class="c-nm">42</span>)
+    sw_stat, sw_pvalue = <span class="c-fn">stats</span>.<span class="c-fn">shapiro</span>(muestra)
+    
     <span class="c-kw">return</span> {
-        <span class="c-st">"media"</span>: float(rendimientos.mean()),
-        <span class="c-st">"desviacion_std"</span>: float(rendimientos.std()),
-        <span class="c-st">"asimetria"</span>: float(rendimientos.skew()),
-        <span class="c-st">"curtosis"</span>: float(rendimientos.kurtosis()),
-        <span class="c-st">"jarque_bera_pvalue"</span>: float(jb_pvalue),
-        <span class="c-st">"shapiro_wilk_pvalue"</span>: float(sw_pvalue),
-        <span class="c-st">"es_normal"</span>: bool(jb_pvalue > <span class="c-nm">0.05</span> <span class="c-op">and</span> sw_pvalue > <span class="c-nm">0.05</span>),
+        <span class="c-st">"media"</span>: <span class="c-fn">float</span>(rendimientos.<span class="c-fn">mean</span>()),
+        <span class="c-st">"desviacion_std"</span>: <span class="c-fn">float</span>(rendimientos.<span class="c-fn">std</span>()),
+        <span class="c-st">"asimetria"</span>: <span class="c-fn">float</span>(rendimientos.<span class="c-fn">skew</span>()),
+        <span class="c-st">"curtosis"</span>: <span class="c-fn">float</span>(rendimientos.<span class="c-fn">kurtosis</span>()),  <span class="c-cm"># Exceso</span>
+        <span class="c-st">"jarque_bera_pvalue"</span>: <span class="c-fn">float</span>(jb_pvalue),
+        <span class="c-st">"shapiro_wilk_pvalue"</span>: <span class="c-fn">float</span>(sw_pvalue),
+        <span class="c-st">"es_normal"</span>: <span class="c-fn">bool</span>(jb_pvalue <span class="c-op">></span> <span class="c-nm">0.05</span> <span class="c-op">and</span> sw_pvalue <span class="c-op">></span> <span class="c-nm">0.05</span>),
     }</code></pre>
       </div>
     </div>
   </div>
 
   <div class="slide">
-    <div class="content-box grid-split">
-      <div class="info-side">
-        <div class="badge">backend/app/services.py</div>
-        <h2>Motores de Cálculo de Riesgo</h2>
-        <p>La clase `RiskCalculator` ejecuta los tres métodos de VaR y recomienda el más robusto según las propiedades reales de los rendimientos.</p>
-        <ul>
-          <li><strong>VaR paramétrico:</strong> asume normalidad e implementa la raíz del tiempo.</li>
-          <li><strong>VaR histórico:</strong> usa el percentil empírico de la distribución real.</li>
-          <li><strong>VaR Monte Carlo:</strong> simula <code>n_simulaciones=10_000</code> escenarios para capturar extremos.</li>
-        </ul>
+    <div class="content-box">
+      <div class="badge"><i class="fas fa-wave-square"></i> ARCH/GARCH</div>
+      <h2>Modelado de Volatilidad Condicional</h2>
+      <p style="color: #b9c4d8; margin-bottom: 1.5rem;">La volatilidad de activos financieros <strong>no es constante</strong> — después de choques, aumenta (clustering). ARCH y GARCH capturan esta dinámica.</p>
+
+      <div class="two-col">
+        <div class="col-content">
+          <h3>ARCH (1)</h3>
+          <div class="formula">
+            $$\sigma_t^2 = \omega + \alpha_1 \epsilon_{t-1}^2$$
+          </div>
+          <p style="margin-top: 0.8rem;">Volatilidad depende del error previo cuadrado.</p>
+        </div>
+        <div class="col-content">
+          <h3>GARCH (1,1)</h3>
+          <div class="formula">
+            $$\sigma_t^2 = \omega + \alpha \epsilon_{t-1}^2 + \beta \sigma_{t-1}^2$$
+          </div>
+          <p style="margin-top: 0.8rem;">Añade dependencia de la volatilidad previa (mean reversion).</p>
+        </div>
       </div>
-      <div class="code-window">
+
+      <p style="margin-top: 1.5rem; color: #f1fa8c;"><strong>Uso en RiskLab:</strong> GARCHService implementa el modelo para pronosticar volatilidad futura, refinando estimaciones de VaR.</p>
+    </div>
+  </div>
+
+  <div class="slide">
+    <div class="content-box">
+      <div class="badge"><i class="fas fa-triangle-exclamation"></i> VaR y CVaR</div>
+      <h2>Value at Risk: Tres Métodos</h2>
+      <p style="color: #b9c4d8; margin-bottom: 1.5rem;"><strong>VaR(95%)</strong> = pérdida máxima esperada en condiciones normales, con 95% de confianza. En otros términos: "hay 5% probabilidad de perder más."</p>
+
+      <div class="two-col">
+        <div class="col-content">
+          <h3>1. Paramétrico</h3>
+          <div class="formula">
+            $$\text{VaR} = \mu + z_\alpha \sigma$$
+          </div>
+          <p style="margin-top: 0.8rem;">Asume normalidad. Rápido pero impreciso con colas pesadas.</p>
+        </div>
+        <div class="col-content">
+          <h3>2. Histórico</h3>
+          <p>Percentil empírico directo de datos pasados. Robusto a distribuciones no normales.</p>
+        </div>
+      </div>
+
+      <div style="margin-top: 1.5rem; padding: 1rem; background: rgba(189, 147, 249, 0.1); border-left: 3px solid var(--accent); border-radius: 6px;">
+        <h3 style="color: var(--accent2); margin-bottom: 0.8rem;">3. Monte Carlo (10,000 simulaciones)</h3>
+        <p style="color: #b9c4d8; margin-bottom: 0.8rem;">Genera escenarios normales con media y σ históricos, luego calcula rentabilidades sintéticas del portafolio.</p>
+        <p style="font-size: 0.9rem; color: #f1fa8c;"><strong>CVaR (Expected Shortfall):</strong> promedio de pérdidas que exceden VaR → captura riesgo de cola.</p>
+      </div>
+
+      <div class="code-window" style="margin-top: 1.5rem;">
         <div class="code-header">
           <div class="mac-btn mac-close"></div><div class="mac-btn mac-min"></div><div class="mac-btn mac-max"></div>
-          <span class="code-title">services.py - Selección de método</span>
+          <span class="code-title">services.py - Lógica de recomendación método</span>
         </div>
-        <pre><code><span class="c-kw">def</span> <span class="c-fn">calcular_var_completo</span>(
-    self,
-    rendimientos_portafolio: pd.Series,
-    nivel_confianza: float = <span class="c-nm">0.95</span>,
-    horizonte_dias: int = <span class="c-nm">1</span>,
-    valor_portafolio: float = <span class="c-nm">10_000.0</span>,
-) -> dict:
+        <pre><code><span class="c-kw">def</span> <span class="c-fn">calcular_var_completo</span>(...) <span class="c-op">-></span> <span class="c-ty">dict</span>:
     resultados = [
-        self.<span class="c-fn">var_parametrico</span>(rendimientos_portafolio, nivel_confianza, horizonte_dias, valor_portafolio),
-        self.<span class="c-fn">var_historico</span>(rendimientos_portafolio, nivel_confianza, horizonte_dias, valor_portafolio),
-        self.<span class="c-fn">var_montecarlo</span>(rendimientos_portafolio, nivel_confianza, horizonte_dias, valor_portafolio),
+        self.<span class="c-fn">var_parametrico</span>(...),
+        self.<span class="c-fn">var_historico</span>(...),
+        self.<span class="c-fn">var_montecarlo</span>(...),
     ]
-
-    _, jb_pvalue = stats.<span class="c-fn">jarque_bera</span>(rendimientos_portafolio.dropna())
-    <span class="c-kw">if</span> jb_pvalue > <span class="c-nm">0.05</span>:
-        recomendado = <span class="c-st">"parametrico"</span>
-    <span class="c-kw">else</span>:
-        recomendado = <span class="c-st">"historico"</span>
-
+    
+    <span class="c-cm"># Prueba de normalidad: decide método recomendado</span>
+    _, jb_pvalue = <span class="c-fn">stats</span>.<span class="c-fn">jarque_bera</span>(rendimientos_portafolio)
+    recomendado = <span class="c-st">"parametrico"</span> <span class="c-kw">if</span> jb_pvalue <span class="c-op">></span> <span class="c-nm">0.05</span> <span class="c-kw">else</span> <span class="c-st">"historico"</span>
+    
     <span class="c-kw">return</span> {
         <span class="c-st">"resultados"</span>: resultados,
-        <span class="c-st">"mejor_metodo_recomendado"</span>: recomendado,
+        <span class="c-st">"mejor_metodo"</span>: recomendado,
     }</code></pre>
       </div>
     </div>
@@ -342,32 +436,41 @@
   <div class="slide">
     <div class="content-box grid-split">
       <div class="info-side">
-        <div class="badge">backend/app/services.py</div>
-        <h2>GARCH, CAPM y FRED</h2>
-        <p>El backend no solo calcula VaR; también ajusta modelos de volatilidad condicional y consume datos macro desde FRED para obtener tasas libres de riesgo dinámicas.</p>
+        <div class="badge"><i class="fas fa-square-root-alt"></i> Optimización</div>
+        <h2>Markowitz y CAPM</h2>
+        <p><strong>Markowitz:</strong> simula miles de portafolios aleatorios, calcula Sharpe, identifica frontera eficiente y portafolios óptimos (máximo Sharpe, mínima varianza).</p>
         <ul>
-          <li><strong>GARCHService:</strong> ajusta `ARCH(1)`, `GARCH(1,1)` y `EGARCH(1,1)` y compara AIC/BIC.</li>
-          <li><strong>MacroService:</strong> obtiene tasa libre de riesgo desde `DGS3MO` y mide inflación con `CPIAUCSL`.</li>
-          <li><strong>CAPM/Markowitz:</strong> los resultados se integran con el dashboard para explicar Beta, Alpha y portafolios eficientes.</li>
+          <li>Portfolio return: $R_p = \sum w_i r_i$</li>
+          <li>Portfolio σ: $\sigma_p = \sqrt{w^T \Sigma w}$</li>
+          <li>Sharpe: $\frac{R_p - R_f}{\sigma_p}$</li>
+        </ul>
+        <p style="margin-top: 1.2rem;"><strong>CAPM:</strong> calcula Beta por regresión vs benchmark, retorna riesgo esperado = $R_f + \beta(R_m - R_f)$.</p>
+        <ul style="margin-top: 0.8rem;">
+          <li>Beta > 1: activo más volátil que mercado (agresivo)</li>
+          <li>Beta < 1: más defensivo</li>
         </ul>
       </div>
       <div class="code-window">
         <div class="code-header">
           <div class="mac-btn mac-close"></div><div class="mac-btn mac-min"></div><div class="mac-btn mac-max"></div>
-          <span class="code-title">services.py - FRED y volatilidad</span>
+          <span class="code-title">services.py - MarkowitzService.construir_frontera()</span>
         </div>
-        <pre><code><span class="c-kw">async def</span> <span class="c-fn">get_tasa_libre_riesgo</span>(self) -> <span class="c-ty">float</span>:
-    observaciones = <span class="c-kw">await</span> self.fred_service.<span class="c-fn">get_series</span>(<span class="c-st">"DGS3MO"</span>, limit=<span class="c-nm">1</span>)
-    <span class="c-kw">if</span> <span class="c-kw">not</span> observaciones:
-        logger.warning(<span class="c-st">"Sin datos de FRED. Usando tasa por defecto 4.5%."</span>)
-        <span class="c-kw">return</span> <span class="c-nm">4.5</span>
-
-    <span class="c-kw">try</span>:
-        valor = <span class="c-kw">float</span>(observaciones[<span class="c-nm">0</span>][<span class="c-st">"value"</span>])
-        <span class="c-kw">return</span> valor
-    <span class="c-kw">except</span> (<span class="c-ty">ValueError</span>, <span class="c-ty">KeyError</span>, <span class="c-ty">IndexError</span>):
-        logger.warning(<span class="c-st">"Error parseando tasa de FRED. Usando 4.5%."</span>)
-        <span class="c-kw">return</span> <span class="c-nm">4.5</span></code></pre>
+        <pre><code><span class="c-kw">def</span> <span class="c-fn">construir_frontera</span>(
+    self, tickers: <span class="c-ty">list</span>[<span class="c-ty">str</span>], df_rendimientos, tasa_rf=<span class="c-nm">0.045</span>
+):
+    media = df_rendimientos.<span class="c-fn">mean</span>() <span class="c-op">*</span> <span class="c-nm">252</span>  <span class="c-cm"># Anualizar</span>
+    cov = df_rendimientos.<span class="c-fn">cov</span>() <span class="c-op">*</span> <span class="c-nm">252</span>
+    
+    <span class="c-kw">for</span> i <span class="c-kw">in</span> <span class="c-fn">range</span>(self.n_portafolios):
+        pesos = <span class="c-np">np</span>.<span class="c-fn">random</span>.<span class="c-fn">random</span>(len(tickers))
+        pesos = pesos / pesos.<span class="c-fn">sum</span>()  <span class="c-cm"># Normalizar</span>
+        
+        rend_p = <span class="c-np">np</span>.<span class="c-fn">dot</span>(pesos, media)
+        var_p = <span class="c-np">np</span>.<span class="c-fn">dot</span>(pesos, <span class="c-np">np</span>.<span class="c-fn">dot</span>(cov, pesos))
+        sigma_p = <span class="c-np">np</span>.<span class="c-fn">sqrt</span>(var_p)
+        
+        sharpe = (rend_p - tasa_rf) / sigma_p
+        <span class="c-cm"># Guardar portafolio...</span></code></pre>
       </div>
     </div>
   </div>
@@ -375,35 +478,70 @@
   <div class="slide">
     <div class="content-box grid-split">
       <div class="info-side">
-        <div class="badge">frontend/app.py</div>
-        <h2>El Consumidor: Streamlit</h2>
-        <p>La UI usa Streamlit como cliente HTTP. El frontend crea el payload, envía el request, y presenta los resultados de VaR/CVaR y los módulos de riesgos.</p>
+        <div class="badge"><i class="fas fa-globe"></i> FRED y Signals</div>
+        <h2>Integración Externa y Señales</h2>
+        <p>El backend consume la FRED API para la tasa libre de riesgo y soporta señales de trading basadas en indicadores técnicos. Esto agrega rigor macroeconómico y operatividad al modelo.</p>
         <ul>
-          <li><strong>API helpers:</strong> `api_post()` encapsula `requests.post(..., json=body)` con manejo de errores.</li>
-          <li><strong>Validación visual:</strong> el dashboard advierte si los pesos no suman 1.0 antes de enviar la petición.</li>
-          <li><strong>Resultados:</strong> muestra `data_var["mejor_metodo_recomendado"]` y tabla con VaR/CVaR de cada método.</li>
+          <li><strong>MacroService:</strong> obtiene `DGS3MO` y `CPIAUCSL` para Rf e inflación.</li>
+          <li><strong>SignalEngine:</strong> genera alertas tipo semáforo para MACD, RSI, Bollinger y Estocástico.</li>
+          <li><strong>Front-end:</strong> Streamlit usa `requests` para consumir la API propia.</li>
         </ul>
       </div>
       <div class="code-window">
         <div class="code-header">
           <div class="mac-btn mac-close"></div><div class="mac-btn mac-min"></div><div class="mac-btn mac-max"></div>
-          <span class="code-title">app.py - Envío de VaR</span>
+          <span class="code-title">app.py - Consumo API</span>
         </div>
-        <pre><code><span class="c-kw">if</span> st.<span class="c-fn">button</span>(<span class="c-st">"🔄 Calcular VaR y CVaR"</span>, key=<span class="c-st">"btn_var"</span>):
-    <span class="c-kw">with</span> st.<span class="c-fn">spinner</span>(<span class="c-st">"Calculando VaR (paramétrico, histórico y Monte Carlo)..."</span>):
-        body_var = {
-            <span class="c-st">"tickers"</span>: tickers,
-            <span class="c-st">"pesos"</span>: pesos,
-            <span class="c-st">"nivel_confianza"</span>: confianza_var,
-            <span class="c-st">"horizonte_dias"</span>: <span class="c-nm">1</span>,
-            <span class="c-st">"valor_portafolio"</span>: valor_portafolio,
-        }
-        data_var = api_post(<span class="c-st">"/var"</span>, body_var)
+        <pre><code><span class="c-kw">def</span> <span class="c-fn">api_post</span>(endpoint: str, body: dict) -> dict | None:
+    r = requests.post(f"{BACKEND_URL}{endpoint}", json=body, timeout=120)
+    r.<span class="c-fn">raise_for_status</span>()
+    <span class="c-kw">return</span> r.json()
 
-    <span class="c-kw">if</span> data_var:
-        st.<span class="c-fn">success</span>(
-            f"Método recomendado: **{data_var['mejor_metodo_recomendado'].upper()}**"
-        )</code></pre>
+<span class="c-kw">if</span> st.<span class="c-fn">button</span>(<span class="c-st">"🔄 Calcular VaR y CVaR"</span>):
+    data_var = api_post(<span class="c-st">"/var"</span>, body_var)
+    st.<span class="c-fn">write</span>(data_var)</code></pre>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide">
+    <div class="content-box">
+      <div class="badge"><i class="fas fa-table"></i> Mapeo de Endpoints</div>
+      <h2>Tabla de Endpoints</h2>
+      <table>
+        <thead>
+          <tr><th>Ruta</th><th>Método</th><th>Descripción</th><th>Status Code</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>/activos</td><td>GET</td><td>Lista activos del portafolio por defecto.</td><td>200 / 404 / 503</td></tr>
+          <tr><td>/precios/{'{ticker}'}</td><td>GET</td><td>Precios OHLCV históricos para un ticker.</td><td>200 / 404 / 503</td></tr>
+          <tr><td>/rendimientos/{'{ticker}'}</td><td>GET</td><td>Rendimientos simples y logarítmicos más estadísticas.</td><td>200 / 404</td></tr>
+          <tr><td>/indicadores/{'{ticker}'}</td><td>GET</td><td>Indicadores técnicos SMA, EMA, Bollinger, RSI, MACD, Estocástico.</td><td>200 / 404</td></tr>
+          <tr><td>/var</td><td>POST</td><td>VaR y CVaR paramétrico, histórico y Monte Carlo.</td><td>200 / 422 / 404</td></tr>
+          <tr><td>/capm</td><td>GET</td><td>Calcula Beta, CAPM y Alpha usando la tasa FRED.</td><td>200 / 404</td></tr>
+          <tr><td>/frontera-eficiente</td><td>POST</td><td>Frontera eficiente de Markowitz y portafolios óptimos.</td><td>200 / 422 / 404</td></tr>
+          <tr><td>/alertas</td><td>GET</td><td>Señales de trading y panel tipo semáforo.</td><td>200 / 503</td></tr>
+          <tr><td>/macro</td><td>GET</td><td>Indicadores macro y métricas vs benchmark.</td><td>200 / 503</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="slide">
+    <div class="content-box title-slide">
+      <div class="badge"><i class="fas fa-check-circle"></i> Conclusión</div>
+      <h1>Arquitectura Robusta y Escalable</h1>
+      <h2>Ingeniería de APIs + Rigor Cuantitativo</h2>
+      <div style="color: #b9c4d8; font-size: 1.05rem; line-height: 1.8; margin-top: 2.5rem; max-width: 900px; margin-left: auto; margin-right: auto;">
+        <p><strong>RiskLab USTA</strong> demuestra que es posible construir un sistema financiero de producción con:</p>
+        <ul style="list-style: none; margin-top: 1.5rem; padding-left: 25px;">
+          <li style="margin-bottom: 0.8rem;"><span class="highlight">✓ Desacoplamiento:</span> Backend científico, frontend consumidor via HTTP/JSON.</li>
+          <li style="margin-bottom: 0.8rem;"><span class="highlight">✓ Validación:</span> Pydantic como aduana antes de cálculos costosos.</li>
+          <li style="margin-bottom: 0.8rem;"><span class="highlight">✓ Asincronismo:</span> async/await para no bloquear el servidor.</li>
+          <li style="margin-bottom: 0.8rem;"><span class="highlight">✓ Reutilización:</span> Services especializadas (DataService, RiskCalculator, etc.).</li>
+          <li style="margin-bottom: 0.8rem;"><span class="highlight">✓ Rigor:</span> Normalidad (JB/SW), VaR multi-método, CAPM, Markowitz, GARCH.</li>
+        </ul>
+        <p style="margin-top: 2rem; font-style: italic; color: #f1fa8c;">El código no solo funciona — está diseñado para ser mantenible, escalable y científicamente riguroso.</p>
       </div>
     </div>
   </div>
@@ -412,11 +550,11 @@
 
 <div class="controls">
   <button class="btn-nav" id="btn-prev"><i class="fas fa-chevron-left"></i></button>
-  <div class="progress"><span id="current-slide">1</span> / <span id="total-slides">8</span></div>
+  <div class="progress"><span id="current-slide">1</span> / <span id="total-slides">12</span></div>
   <button class="btn-nav" id="btn-next"><i class="fas fa-chevron-right"></i></button>
 </div>
 
-<div class="footer-text">Sustentación RiskLab USTA · FastAPI + Pydantic + Math</div>
+<div class="footer-text">Sustentación Técnica RiskLab USTA · FastAPI • Pydantic • Ciencia de Datos Financiera</div>
 
 <script>
   const slides = document.querySelectorAll('.slide');
@@ -427,7 +565,7 @@
 
   function updateSlider() {
     slides.forEach((slide, index) => {
-      if(index === currentIndex) {
+      if (index === currentIndex) {
         slide.classList.add('active');
       } else {
         slide.classList.remove('active');
@@ -446,7 +584,8 @@
     if (e.key === 'ArrowRight') nextSlide();
     else if (e.key === 'ArrowLeft') prevSlide();
   });
-</script>
+  
+  document.getElementById('total-slides').innerText = slides.length;</script>
 
 </body>
 </html>
