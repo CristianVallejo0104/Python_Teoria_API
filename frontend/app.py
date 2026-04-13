@@ -851,33 +851,74 @@ with tabs[6]:
     # INYECCIÓN DE CSS PARA ARREGLAR EL CONTRASTE
     st.markdown("""
         <style>
+        /* Forzar tamaño base para todo el contenido dentro de las tarjetas */
+        .semaforo-verde, .semaforo-rojo, .semaforo-amarillo,
+        .semaforo-verde * , .semaforo-rojo * , .semaforo-amarillo * {
+            font-size: 13px !important;
+            line-height: 1.35 !important;
+            font-family: "Inter", "Segoe UI", Roboto, sans-serif !important;
+            color: inherit !important;
+        }
+
         .semaforo-verde {
-            background-color: rgba(16, 185, 129, 0.15);
+            background-color: rgba(16,185,129,0.12);
             border: 1px solid #10b981;
-            padding: 15px;
+            padding: 10px 12px;
             border-radius: 8px;
-            color: #ffffff !important; /* Letra blanca */
+            color: #ffffff !important;
         }
         .semaforo-rojo {
-            background-color: rgba(239, 68, 68, 0.15);
+            background-color: rgba(239,68,68,0.12);
             border: 1px solid #ef4444;
-            padding: 15px;
+            padding: 10px 12px;
             border-radius: 8px;
-            color: #ffffff !important; /* Letra blanca */
+            color: #ffffff !important;
         }
         .semaforo-amarillo {
-            background-color: #fef08a; /* Fondo amarillo sólido */
+            background-color: #fef08a;
             border: 1px solid #facc15;
-            padding: 15px;
+            padding: 10px 12px;
             border-radius: 8px;
-            color: #1a1a1a !important; /* LETRA OSCURA PARA QUE SE LEA */
+            color: #1a1a1a !important;
         }
-        /* Forzar herencia a las etiquetas internas del amarillo */
-        .semaforo-amarillo strong, .semaforo-amarillo small {
-            color: #1a1a1a !important; 
+
+        /* Título dentro de la tarjeta */
+        .semaforo-title {
+            font-weight: 700 !important;
+            font-size: 15px !important;
+            margin: 0 0 6px 0;
+            display: block;
+        }
+
+        /* Descripción: más pequeña y con ajuste de texto */
+        .semaforo-desc {
+            font-size: 12px !important;
+            margin: 0;
+            display: block;
+            white-space: normal !important;
+            overflow-wrap: anywhere !important;
+        }
+
+        /* Evitar que Streamlit aplique márgenes extra a <p> o <small> */
+        .semaforo-amarillo p, .semaforo-rojo p, .semaforo-verde p {
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Responsive: reducir aún más en pantallas pequeñas */
+        @media (max-width: 520px) {
+            .semaforo-verde, .semaforo-rojo, .semaforo-amarillo,
+            .semaforo-verde * , .semaforo-rojo * , .semaforo-amarillo * {
+                font-size: 11px !important;
+            }
+            .semaforo-title { font-size: 13px !important; }
+            .semaforo-desc  { font-size: 11px !important; }
         }
         </style>
     """, unsafe_allow_html=True)
+
+
+
 
     if st.button("🔄 Generar señales", key="btn_alertas"):
         with st.spinner("Evaluando indicadores técnicos para cada activo..."):
@@ -902,8 +943,8 @@ with tabs[6]:
                 with c1:
                     st.markdown(
                         f'<div class="{clase_css}">'
-                        f'<strong>{semaforo}</strong><br>'
-                        f'<small>{activo["interpretacion_global"][:150]}...</small>'
+                        f'<span class="semaforo-title">{semaforo}</span>'
+                        f'<span class="semaforo-desc">{activo["interpretacion_global"]}</span>'
                         f'</div>',
                         unsafe_allow_html=True,
                     )
