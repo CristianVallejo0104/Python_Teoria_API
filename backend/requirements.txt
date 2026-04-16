@@ -1,29 +1,25 @@
-# ── Framework y servidor ───────────────────────────────
+# ── Servidor y Framework (Backend) ─────────────────────
 fastapi==0.115.5
 uvicorn[standard]==0.32.1
- 
-# ── Validación y configuración ─────────────────────────
 pydantic==2.10.3
 pydantic-settings==2.6.1
- 
-# ── HTTP asíncrono ─────────────────────────────────────
-httpx==0.28.0
- 
-# ── Datos financieros ──────────────────────────────────
+
+# ── Interfaz de Usuario (Frontend) ─────────────────────
+streamlit==1.41.1
+
+# ── Datos y Ciencia de Datos (Core compartido) ─────────
 yfinance==0.2.50
 pandas==2.2.3
 numpy==1.26.4
- 
-# ── Análisis estadístico y riesgo ──────────────────────
+plotly==5.24.1
+
+# ── Análisis Estadístico y Riesgo ──────────────────────
 scipy==1.14.1
 statsmodels==0.14.4
-arch==7.1.0          # ARCH/GARCH models
- 
-# ── Optimización (Markowitz / frontera eficiente) ──────
+arch==7.1.0
 cvxpy==1.5.3
- 
-# ── Visualización (usada en tests, no en frontend) ─────
-plotly==5.24.1
- 
-# ── Utilidades ─────────────────────────────────────────
+
+# ── Comunicación y Utilidades ──────────────────────────
+httpx==0.28.0
+requests==2.32.3
 python-dotenv==1.0.1
