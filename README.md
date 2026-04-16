@@ -199,7 +199,6 @@ Teoria_API/
 │   └── requirements.txt
 ├── frontend/
 │   ├── app.py                # Dashboard Streamlit (8 módulos)
-│   └── requerimentsfrontend.txt
 ├── .gitignore
 └── README.md
 ```
