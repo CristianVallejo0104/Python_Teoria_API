@@ -490,37 +490,20 @@ with tabs[2]:
     ticker_g = st.selectbox("Activo para modelar", tickers, key="m3_ticker")
  
     if st.button("🔄 Ajustar modelos ARCH/GARCH", key="btn_garch"):
-        with st.spinner("Ajustando ARCH(1), GARCH(1,1) y EGARCH(1,1)... (puede tardar ~15s)"):
-            # Obtenemos rendimientos y los pasamos al servicio de riesgo via /var
-            # El análisis GARCH se expone a través de los rendimientos del ticker
+        with st.spinner("Ajustando ARCH(1), GARCH(1,1) y EGARCH(1,1)..."):
             data_g = api_get(f"/rendimientos/{ticker_g}")
- 
+
         if data_g:
-            # Calcular GARCH en el frontend usando los rendimientos
-            # (el servicio GARCH se llama internamente desde services.py)
-            # Mostramos los estadísticos disponibles desde los rendimientos
+            import numpy as np
             est_g = data_g["estadisticas"]
             rend_vals = [x["rendimiento_log"] for x in data_g["rendimientos"]]
- 
-            # Tabla comparativa simulada con valores estadísticos reales
-            st.markdown("#### Propiedades de los rendimientos")
-            col1, col2, col3 = st.columns(3)
-            col1.metric("Volatilidad diaria (σ)",
-                        f"{est_g['desviacion_std']*100:.4f}%")
-            col2.metric("Volatilidad anualizada",
-                        f"{est_g['desviacion_std']*100*np.sqrt(252):.2f}%")
-            col3.metric("Curtosis (fat tails)",
-                        f"{est_g['curtosis']:.3f}",
-                        delta="Colas pesadas" if est_g['curtosis'] > 0 else "Colas ligeras")
- 
-            st.markdown("#### ¿Por qué se usa GARCH?")
+
+            # ── Gráfico de volatility clustering ─────────────────────────
             df_rend_g = pd.DataFrame(data_g["rendimientos"])
             df_rend_g["fecha"] = pd.to_datetime(df_rend_g["fecha"])
             df_rend_g["vol_movil"] = (
-                df_rend_g["rendimiento_log"]
-                .rolling(21).std() * np.sqrt(252) * 100
+                df_rend_g["rendimiento_log"].rolling(21).std() * np.sqrt(252) * 100
             )
- 
             fig_vol = go.Figure()
             fig_vol.add_trace(go.Scatter(
                 x=df_rend_g["fecha"],
@@ -535,36 +518,68 @@ with tabs[2]:
             ))
             fig_vol.update_layout(
                 title="Agrupamiento de volatilidad (Volatility Clustering)",
-                yaxis_title="%", height=350,
+                yaxis_title="%", height=320,
             )
             st.plotly_chart(fig_vol, use_container_width=True)
- 
+
+            # ── Ajustar modelos GARCH ─────────────────────────────────────
             st.markdown("#### Comparativa de modelos ARCH/GARCH")
-            st.markdown("""
-            | Modelo | Descripción | Ventaja | Cuándo usarlo |
-            |---|---|---|---|
-            | **ARCH(1)** | Volatilidad depende solo del shock de ayer | Simple, fácil de interpretar | Series con memoria corta |
-            | **GARCH(1,1)** | Volatilidad depende del shock de ayer Y la varianza de ayer | Captura persistencia de volatilidad | **Más usado en finanzas** |
-            | **EGARCH(1,1)** | GARCH asimétrico | Captura efecto apalancamiento (caídas↑vol más que subidas) | Acciones con asimetría |
-            
-            **Selección de modelo:** Se usa el **AIC** (Criterio de Información de Akaike) — el modelo con **menor AIC** es el mejor compromiso entre ajuste y parsimonia.
-            
-            **Persistencia (α+β):** Si α+β ≈ 1 en GARCH(1,1), la volatilidad es muy persistente y tarda mucho en volver a su nivel normal.
-            """)
- 
-            with st.expander("📖 Fórmulas del GARCH(1,1)"):
-                st.markdown(r"""
-                **Ecuación de media:** $r_t = \mu + \epsilon_t$
-                
-                **Ecuación de varianza:** $\sigma_t^2 = \omega + \alpha \cdot \epsilon_{t-1}^2 + \beta \cdot \sigma_{t-1}^2$
-                
-                Donde:
-                - $\omega$ = constante (varianza incondicional de largo plazo)
-                - $\alpha$ = coeficiente ARCH (impacto del shock pasado)
-                - $\beta$ = coeficiente GARCH (persistencia de la varianza)
-                - Condición de estacionariedad: $\alpha + \beta < 1$
-                """)
- 
+            try:
+                from arch import arch_model
+                from scipy import stats
+                rend_pct = pd.Series(rend_vals) * 100
+                modelos_resultados = []
+                for esp, vol, p, q in [
+                    ("ARCH(1)",    "ARCH",   1, 0),
+                    ("GARCH(1,1)", "GARCH",  1, 1),
+                    ("EGARCH(1,1)","EGARCH", 1, 1),
+                ]:
+                    try:
+                        if vol == "ARCH":
+                            m = arch_model(rend_pct, vol="ARCH", p=p)
+                        else:
+                            m = arch_model(rend_pct, vol=vol, p=p, q=q)
+                        res = m.fit(disp="off", show_warning=False)
+                        fc = res.forecast(horizon=5, reindex=False)
+                        vol1d = float(np.sqrt(fc.variance.iloc[-1, 0])) / 100
+                        jb_p = float(stats.jarque_bera(res.std_resid.dropna())[1])
+                        params = res.params
+                        alpha = [float(v) for k, v in params.items() if "alpha[" in k]
+                        beta  = [float(v) for k, v in params.items() if "beta[" in k]
+                        pers  = sum(alpha) + sum(beta) if beta else sum(alpha)
+                        modelos_resultados.append({
+                            "Modelo": esp,
+                            "AIC": round(res.aic, 2),
+                            "BIC": round(res.bic, 2),
+                            "Log-Lik": round(res.loglikelihood, 2),
+                            "Persistencia (α+β)": round(pers, 4),
+                            "Pronóst. vol. 1d (%)": round(vol1d * 100, 4),
+                            "JB residuos p-val": round(jb_p, 4),
+                            "Mejor (AIC)": "",
+                        })
+                    except Exception:
+                        pass
+
+                if modelos_resultados:
+                    mejor_aic = min(modelos_resultados, key=lambda x: x["AIC"])
+                    for r in modelos_resultados:
+                        r["Mejor (AIC)"] = "⭐" if r["Modelo"] == mejor_aic["Modelo"] else ""
+
+                    df_garch = pd.DataFrame(modelos_resultados).set_index("Modelo")
+                    st.dataframe(df_garch, use_container_width=True)
+
+                    vol_anual = mejor_aic["Pronóst. vol. 1d (%)"] * np.sqrt(252)
+                    st.success(
+                        f"**Modelo seleccionado: {mejor_aic['Modelo']}** "
+                        f"(menor AIC = {mejor_aic['AIC']}). "
+                        f"Volatilidad pronosticada mañana: **{mejor_aic['Pronóst. vol. 1d (%)']:.4f}%** diario "
+                        f"(**{vol_anual:.2f}%** anualizado). "
+                        f"Persistencia α+β = {mejor_aic['Persistencia (α+β)']} "
+                        f"{'— muy persistente, la volatilidad tarda en calmarse.' if mejor_aic['Persistencia (α+β)'] > 0.9 else '— volatilidad moderadamente persistente.'}"
+                    )
+            except ImportError:
+                st.warning("Librería `arch` no instalada. Ejecuta: pip install arch")
+    
  
 # ══════════════════════════════════════════════════════════════════════════════
 # MÓDULO 4 — CAPM Y BETA
@@ -763,7 +778,31 @@ with tabs[5]:
             frontera = pd.DataFrame(data_mk["frontera_eficiente"])
             ms = data_mk["portafolio_max_sharpe"]
             mv = data_mk["portafolio_min_varianza"]
- 
+
+            st.markdown("#### Matriz de correlación entre activos")
+            if "matriz_correlacion" in data_mk:
+                corr_dict = data_mk["matriz_correlacion"]
+                corr_df = pd.DataFrame(corr_dict)
+                
+                fig_corr = go.Figure(data=go.Heatmap(
+                    z=corr_df.values,
+                    x=corr_df.columns.tolist(),
+                    y=corr_df.index.tolist(),
+                    colorscale="RdBu",
+                    zmin=-1, zmax=1,
+                    text=corr_df.round(2).values,
+                    texttemplate="%{text}",
+                    textfont={"size": 11},
+                    colorbar=dict(title="Correlación"),
+                ))
+                fig_corr.update_layout(
+                    title="Correlación entre activos (rendimientos diarios)",
+                    height=350,
+                )
+                st.plotly_chart(fig_corr, use_container_width=True)
+                st.caption("Correlaciones cercanas a 1 = se mueven juntos · Cercanas a -1 = se mueven opuesto · "
+                        "Correlaciones bajas entre activos = mejor diversificación")
+
             fig_mk = go.Figure()
  
             # Nube de portafolios (conjunto factible)
