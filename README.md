@@ -229,7 +229,7 @@ La combinación cubre tecnología, consumo discrecional y vehículos eléctricos
 | `uvicorn[standard]` | `0.32.1` | Servidor ASGI |
 | `pydantic` | `2.10.3` | Validación y modelado de datos |
 | `pydantic-settings` | `2.6.1` | Configuración desde `.env` |
-| `yfinance` | `0.2.50` | Descarga de datos financieros |
+| `yfinance` | `1.2.2` | Descarga de datos financieros |
 | `pandas` | `2.2.3` | Manipulación de series de tiempo |
 | `numpy` | `1.26.4` | Cálculo numérico vectorizado |
 | `scipy` | `1.14.1` | Pruebas estadísticas (Jarque-Bera, Shapiro-Wilk, linregress) |

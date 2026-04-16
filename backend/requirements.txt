@@ -8,7 +8,7 @@ pydantic-settings==2.6.1
 streamlit==1.41.1
 
 # ── Datos y Ciencia de Datos (Core compartido) ─────────
-yfinance==0.2.50
+yfinance==1.2.2
 pandas==2.2.3
 numpy==1.26.4
 plotly==5.24.1
