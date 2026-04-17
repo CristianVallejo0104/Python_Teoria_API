@@ -269,7 +269,7 @@ Durante el desarrollo de este proyecto se utilizó **Claude (Anthropic)** como a
 
 - **Estructuración del proyecto:** definición de la arquitectura backend/frontend y organización de módulos.
 - **Generación de código base:** implementación inicial de los servicios (`services.py`), modelos Pydantic (`models.py`) y endpoints (`main.py`), posteriormente revisados, adaptados y comprendidos por el autor.
-- **Depuración:** resolución de incompatibilidades con `yfinance 0.2.50` (cambios en estructura de columnas MultiIndex), errores de entorno virtual en Windows y problemas de importación de módulos.
+- **Depuración:** resolución de incompatibilidades con `yfinance 1.2.2` (cambios en estructura de columnas MultiIndex), errores de entorno virtual en Windows y problemas de importación de módulos.
 - **Documentación:** asistencia en la redacción de docstrings, este README y el informe ejecutivo.
 
 **Criterio de uso responsable:** todo el código generado con asistencia de IA fue revisado, entendido y probado por el autor antes de incorporarlo al proyecto. El estudiante es capaz de explicar cualquier sección del código en la sustentación oral.
