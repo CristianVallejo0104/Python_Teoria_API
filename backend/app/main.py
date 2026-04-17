@@ -459,7 +459,6 @@ async def get_capm(
     settings: SettingsDep = None,
     data_service: DataService = Depends(get_data_service),
     capm_service: CAPMService = Depends(get_capm_service),
-    fred_service: FredServiceDep = None,
     macro_service: MacroService = Depends(get_macro_service),
 ):
     tickers_usar = tickers or settings.default_tickers
@@ -519,7 +518,7 @@ async def calcular_frontera(
         rf = rf_pct / 100   # Convertir a decimal
  
     df_rend = data_service.get_rendimientos_multiples(body.tickers)
- 
+    markowitz.n_portafolios= body.n_portafolios
     resultado = markowitz.construir_frontera(
         tickers=body.tickers,
         df_rendimientos=df_rend,

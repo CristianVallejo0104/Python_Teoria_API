@@ -140,14 +140,54 @@ with st.sidebar:
     st.markdown("## ⚙️ Configuración")
     st.markdown("---")
  
-    tickers_input = st.text_input(
-        "Tickers del portafolio",
-        value="AAPL, MSFT, GOOGL, AMZN, TSLA",
-        help="Separa los tickers con coma. Mínimo 2, máximo 10.",
+    # ── Tickers ──────────────────────────────────────────────────────────────
+    TICKERS_DISPONIBLES = [
+        "AAPL", "MSFT", "GOOGL", "AMZN", "META", "NVDA", "TSLA",
+        "AMD", "INTC", "CRM", "ORCL", "ADBE", "NFLX", "UBER", "LYFT",
+        "JPM", "BAC", "GS", "MS", "WFC", "BRK-B", "V", "MA", "AXP",
+        "JNJ", "PFE", "MRK", "ABBV", "UNH", "CVS",
+        "XOM", "CVX", "COP", "SLB",
+        "WMT", "HD", "MCD", "SBUX", "NKE", "KO", "PEP",
+        "SPY", "QQQ", "DIA", "IWM", "GLD",
+    ]
+
+    tickers = st.multiselect(
+        "📦 Tickers del portafolio",
+        options=TICKERS_DISPONIBLES,
+        default=["AAPL", "MSFT", "GOOGL", "AMZN", "TSLA"],
+        help="Selecciona entre 2 y 10 activos para analizar.",
     )
-    tickers = [t.strip().upper() for t in tickers_input.split(",") if t.strip()]
- 
-    benchmark = st.text_input("Benchmark", value="^GSPC", help="Ej: ^GSPC (S&P 500)")
+
+    ticker_custom = st.text_input(
+        "➕ Agregar ticker personalizado",
+        placeholder="Ej: TSM, BABA, BRK-A",
+        help="Si tu ticker no aparece arriba, escríbelo aquí separado por comas.",
+    )
+    if ticker_custom.strip():
+        extras = [t.strip().upper() for t in ticker_custom.split(",") if t.strip()]
+        tickers = tickers + [t for t in extras if t not in tickers]
+
+    if len(tickers) < 2:
+        st.warning("⚠️ Selecciona al menos 2 activos.")
+    elif len(tickers) > 10:
+        st.warning("⚠️ Máximo 10 activos. Se usarán los primeros 10.")
+        tickers = tickers[:10]
+
+    # ── Benchmark ─────────────────────────────────────────────────────────────
+    benchmark = st.selectbox(
+        "📊 Benchmark",
+        options=["^GSPC", "^DJI", "^IXIC", "^RUT", "QQQ", "SPY"],
+        index=0,
+        format_func=lambda x: {
+            "^GSPC": "^GSPC — S&P 500",
+            "^DJI":  "^DJI  — Dow Jones",
+            "^IXIC": "^IXIC — NASDAQ Composite",
+            "^RUT":  "^RUT  — Russell 2000",
+            "QQQ":   "QQQ   — NASDAQ-100 ETF",
+            "SPY":   "SPY   — S&P 500 ETF",
+        }.get(x, x),
+        help="Índice contra el cual comparar el portafolio.",
+    )
  
     fecha_inicio = st.date_input(
         "Fecha inicio",

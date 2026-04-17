@@ -67,7 +67,7 @@ class Settings(BaseSettings):
  
     # ── Configuración del archivo .env ────────────────────────────────────────
     model_config = SettingsConfigDict(
-        env_file="backend/.env",
+        env_file=".env",
         env_file_encoding="utf-8",
         # Permite ignorar variables extra que no estén definidas aquí
         extra="ignore",
