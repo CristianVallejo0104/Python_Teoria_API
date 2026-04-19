@@ -141,20 +141,61 @@ with st.sidebar:
     st.markdown("---")
  
     # ── Tickers ──────────────────────────────────────────────────────────────
-    TICKERS_DISPONIBLES = [
-        "AAPL", "MSFT", "GOOGL", "AMZN", "META", "NVDA", "TSLA",
-        "AMD", "INTC", "CRM", "ORCL", "ADBE", "NFLX", "UBER", "LYFT",
-        "JPM", "BAC", "GS", "MS", "WFC", "BRK-B", "V", "MA", "AXP",
-        "JNJ", "PFE", "MRK", "ABBV", "UNH", "CVS",
-        "XOM", "CVX", "COP", "SLB",
-        "WMT", "HD", "MCD", "SBUX", "NKE", "KO", "PEP",
-        "SPY", "QQQ", "DIA", "IWM", "GLD",
-    ]
+    TICKERS_DISPONIBLES_DB = {
+        # Tech
+        "AAPL":  "Apple Inc.",
+        "MSFT":  "Microsoft Corporation",
+        "GOOGL": "Alphabet Inc. (Google)",
+        "AMZN":  "Amazon.com Inc.",
+        "META":  "Meta Platforms (Facebook)",
+        "NVDA":  "NVIDIA Corporation",
+        "TSLA":  "Tesla Inc.",
+        "AMD":   "Advanced Micro Devices",
+        "INTC":  "Intel Corporation",
+        "CRM":   "Salesforce Inc.",
+        "ORCL":  "Oracle Corporation",
+        "ADBE":  "Adobe Inc.",
+        "NFLX":  "Netflix Inc.",
+        "UBER":  "Uber Technologies",
+        "LYFT":  "Lyft Inc.",
+        "JPM":   "JPMorgan Chase",
+        "BAC":   "Bank of America",
+        "GS":    "Goldman Sachs",
+        "MS":    "Morgan Stanley",
+        "WFC":   "Wells Fargo",
+        "BRK-B": "Berkshire Hathaway",
+        "V":     "Visa Inc.",
+        "MA":    "Mastercard Inc.",
+        "AXP":   "American Express",
+        # Salud
+        "JNJ":   "Johnson & Johnson",
+        "PFE":   "Pfizer Inc.",
+        "MRK":   "Merck & Co.",
+        "ABBV":  "AbbVie Inc.",
+        "UNH":   "UnitedHealth Group",
+        "CVS":   "CVS Health",
+        # Energía
+        "XOM":   "ExxonMobil",
+        "CVX":   "Chevron Corporation",
+        "COP":   "ConocoPhillips",
+        "SLB":   "Schlumberger",
+        # Consumo
+        "WMT":   "Walmart Inc.",
+        "HD":    "Home Depot",
+        "MCD":   "McDonald's Corporation",
+        "SBUX":  "Starbucks Corporation",
+        "NKE":   "Nike Inc.",
+        "KO":    "Coca-Cola Company",
+        "PEP":   "PepsiCo Inc."
+    }
+    
+    TICKERS_DISPONIBLES= list(TICKERS_DISPONIBLES_DB.keys())
 
     tickers = st.multiselect(
         "📦 Tickers del portafolio",
         options=TICKERS_DISPONIBLES,
-        default=["AAPL", "MSFT", "GOOGL", "AMZN", "TSLA"],
+        default=["AAPL", "MSFT", "GOOGL"],
+        format_func=lambda t: f"{t} — {TICKERS_DISPONIBLES_DB[t]}",
         help="Selecciona entre 2 y 10 activos para analizar.",
     )
 
@@ -254,6 +295,7 @@ st.markdown(f"""
 # ══════════════════════════════════════════════════════════════════════════════
  
 tabs = st.tabs([
+    "🎯 Contexto",
     "📈 Mód.1 Análisis Técnico",
     "📉 Mód.2 Rendimientos",
     "🌊 Mód.3 ARCH/GARCH",
@@ -262,14 +304,120 @@ tabs = st.tabs([
     "⚡ Mód.6 Markowitz",
     "🚦 Mód.7 Señales",
     "🌐 Mód.8 Macro",
+    "📋 Conclusiones",
 ])
  
- 
+# ══════════════════════════════════════════════════════════════════════════════
+# PESTAÑA CONTEXTO — OBJETIVOS Y ACTIVOS SELECCIONADOS
+# ══════════════════════════════════════════════════════════════════════════════
+
+with tabs[0]:
+    st.subheader("🎯 Contexto y objetivos del análisis")
+                 
+    col_izq, col_der = st.columns([3,2])
+
+    with col_izq:
+        st.markdown("### Objetivo del proyecto")
+        st.markdown("""
+        **RiskLab USTA** es un laboratorio de análisis cuantitativo de riesgo financiero
+        construido como aplicación cliente-servidor real, integrando dos materias:
+
+        - **Python para desarrollo de APIs con IA** — arquitectura de backend con
+          FastAPI, validación con Pydantic v2, inyección de dependencias, async/await.
+        - **Teoría del Riesgo** — modelos de volatilidad condicional, VaR, CAPM,
+          optimización de Markowitz y métricas de benchmark.
+
+        El objetivo principal es demostrar cómo Python conecta herramientas de
+        ingeniería de software con modelos cuantitativos financieros en un sistema
+        que valida datos antes de ejecutar matemática, consume APIs externas en
+        tiempo real (Yahoo Finance y FRED) y expone los resultados en un tablero
+        interactivo.
+        """)
+
+        st.markdown("### Arquitectura")
+        st.markdown("""
+         Streamlit (8501) ──HTTP/JSON──► FastAPI (8000) ──► yfinance / FRED
+                                          │
+                                 Pydantic v2 (validación)
+                                 services.py (8 clases de cálculo)
+                                 config.py (BaseSettings + .env)
+                                 dependencies.py (Depends + decoradores)
+        El frontend no calcula nada — solo pide datos al backend. El backend
+        valida cada request con Pydantic antes de ejecutar cualquier cálculo.
+        Si el request es inválido, devuelve 422 sin llegar a la lógica matemática.
+        """)
+
+    with col_der:
+        st.markdown("### Activos seleccionados")
+        st.info(
+            "Se eligieron **3 acciones tecnológicas** de gran capitalización del "
+            "índice S&P 500 para garantizar liquidez, datos históricos confiables "
+            "y correlaciones realistas para la optimización de Markowitz.",
+            icon="📦",
+        )
+
+        activos_info = [
+            {
+                "ticker": "AAPL",
+                "nombre": "Apple Inc.",
+                "sector": "Tecnología — Hardware",
+                "razon": "Mayor capitalización mundial. Alta liquidez. Beta cercano a 1 — se mueve similar al mercado.",
+            },
+            {
+                "ticker": "MSFT",
+                "nombre": "Microsoft Corporation",
+                "sector": "Tecnología — Software y Nube",
+                "razon": "Diversifica dentro del sector tech. Negocio estable por Azure y Office 365. Menor volatilidad.",
+            },
+            {
+                "ticker": "GOOGL",
+                "nombre": "Alphabet Inc. (Google)",
+                "sector": "Tecnología — Publicidad e IA",
+                "razon": "Complementa con exposición a publicidad digital e IA. Beta similar a Apple.",
+            },
+        ]
+
+        for a in activos_info:
+            with st.container():
+                st.markdown(f"**{a['ticker']} — {a['nombre']}**")
+                st.caption(f"Sector: {a['sector']}")
+                st.markdown(f"<small>{a['razon']}</small>", unsafe_allow_html=True)
+                st.markdown("---")
+
+        st.markdown("### Benchmark")
+        st.markdown("""
+        **^GSPC — S&P 500**
+        Índice de las 500 empresas más grandes de EE.UU. Estándar de la industria
+        para comparar el desempeño de portafolios de renta variable estadounidense.
+        """)
+
+        st.markdown("### Tasa libre de riesgo")
+        st.markdown("""
+        **Treasury 3M (FRED — serie DGS3MO)**
+        Se obtiene dinámicamente desde la API del Federal Reserve de EE.UU.
+        Representa el rendimiento mínimo sin riesgo — piso de cualquier inversión.
+        """)
+
+    st.markdown("---")
+    st.markdown("### Flujo de los 8 módulos del tablero")
+    st.markdown("""
+    El análisis sigue una secuencia lógica de lo descriptivo a lo prescriptivo:
+
+    1. **Análisis Técnico** — indicadores de precio y momentum (SMA, EMA, Bollinger, RSI, MACD, Estocástico).
+    2. **Rendimientos** — estadísticas descriptivas y pruebas de normalidad que justifican los módulos siguientes.
+    3. **ARCH/GARCH** — modelos de volatilidad condicional para capturar el volatility clustering.
+    4. **CAPM y Beta** — riesgo sistemático y rendimiento esperado por activo.
+    5. **VaR y CVaR** — cuantificación de pérdida máxima con tres métodos comparados.
+    6. **Markowitz** — optimización de portafolio: máximo Sharpe y mínima varianza.
+    7. **Señales** — operacionalización de indicadores técnicos como alertas de trading.
+    8. **Macro** — contexto macroeconómico y métricas contra el benchmark.
+    """)
+
 # ══════════════════════════════════════════════════════════════════════════════
 # MÓDULO 1 — ANÁLISIS TÉCNICO
 # ══════════════════════════════════════════════════════════════════════════════
  
-with tabs[0]:
+with tabs[1]:
     st.subheader("📈 Análisis Técnico e Indicadores")
  
     col_ctrl1, col_ctrl2 = st.columns([2, 1])
@@ -379,7 +527,7 @@ with tabs[0]:
 # MÓDULO 2 — RENDIMIENTOS
 # ══════════════════════════════════════════════════════════════════════════════
  
-with tabs[1]:
+with tabs[2]:
     st.subheader("📉 Rendimientos y Propiedades Empíricas")
  
     ticker_r = st.selectbox("Activo", tickers, key="m2_ticker")
@@ -518,7 +666,7 @@ with tabs[1]:
 # MÓDULO 3 — ARCH/GARCH
 # ══════════════════════════════════════════════════════════════════════════════
  
-with tabs[2]:
+with tabs[3]:
     st.subheader("🌊 Volatilidad Condicional — ARCH/GARCH")
     st.info(
         "Los modelos ARCH/GARCH capturan el **agrupamiento de volatilidad**: "
@@ -625,7 +773,7 @@ with tabs[2]:
 # MÓDULO 4 — CAPM Y BETA
 # ══════════════════════════════════════════════════════════════════════════════
  
-with tabs[3]:
+with tabs[4]:
     st.subheader("🎯 CAPM y Riesgo Sistemático")
  
     if st.button("🔄 Calcular CAPM", key="btn_capm"):
@@ -722,7 +870,7 @@ with tabs[3]:
 # MÓDULO 5 — VaR y CVaR
 # ══════════════════════════════════════════════════════════════════════════════
  
-with tabs[4]:
+with tabs[5]:
     st.subheader("🛡️ Valor en Riesgo (VaR) y CVaR")
  
     if st.button("🔄 Calcular VaR y CVaR", key="btn_var"):
@@ -794,7 +942,7 @@ with tabs[4]:
 # MÓDULO 6 — MARKOWITZ
 # ══════════════════════════════════════════════════════════════════════════════
  
-with tabs[5]:
+with tabs[6]:
     st.subheader("⚡ Optimización de Markowitz — Frontera Eficiente")
  
     n_port = st.slider("Portafolios a simular", 1000, 10000, 5000, step=1000)
@@ -924,7 +1072,7 @@ with tabs[5]:
 # MÓDULO 7 — SEÑALES Y ALERTAS
 # ══════════════════════════════════════════════════════════════════════════════
  
-with tabs[6]:
+with tabs[7]:
     st.subheader("🚦 Señales y Alertas de Trading")
 
     # INYECCIÓN DE CSS PARA ARREGLAR EL CONTRASTE
@@ -1049,7 +1197,7 @@ with tabs[6]:
 # MÓDULO 8 — MACRO Y BENCHMARK
 # ══════════════════════════════════════════════════════════════════════════════
  
-with tabs[7]:
+with tabs[8]:
     st.subheader("🌐 Contexto Macroeconómico y Benchmark")
  
     if st.button("🔄 Cargar datos macro y benchmark", key="btn_macro"):
@@ -1125,3 +1273,81 @@ with tabs[7]:
                     - **Máximo Drawdown:** la mayor caída desde un pico histórico.
                       Mide el peor escenario vivido. Un inversionista debe poder tolerarlo.
                     """)
+
+# ══════════════════════════════════════════════════════════════════════════════
+# PESTAÑA CONCLUSIONES
+# ══════════════════════════════════════════════════════════════════════════════
+
+with tabs[9]:
+    st.subheader("📋 Conclusiones del Proyecto")
+
+    st.markdown("### Conclusiones técnicas — Ingeniería de Software")
+    st.markdown("""
+    - **Arquitectura desacoplada funcional.** El frontend Streamlit consume el
+      backend FastAPI exclusivamente por HTTP. Esto permite que cada capa se
+      pueda cambiar o testear independientemente.
+    - **Validación robusta con Pydantic v2.** Cada request pasa por validadores
+      de tipo, rango y consistencia cruzada antes de llegar a la lógica de
+      cálculo. Eso previene errores en tiempo de ejecución y documenta
+      automáticamente los contratos de datos en `/docs`.
+    - **Inyección de dependencias con `Depends()`.** Los endpoints no instancian
+      servicios — los reciben inyectados. Esto facilita testing y permite
+      reemplazar implementaciones sin tocar las rutas.
+    - **Consumo de APIs externas en tiempo real.** Yahoo Finance para precios
+      y FRED para datos macroeconómicos. La tasa libre de riesgo y la
+      inflación se actualizan automáticamente al hacer cada request.
+    - **Decoradores personalizados.** `@timing_decorator` y `@cache_result`
+      loggean tiempos de ejecución y cachean llamadas costosas.
+    """)
+
+    st.markdown("### Conclusiones cuantitativas — Hallazgos del portafolio")
+    st.markdown("""
+    - **Los rendimientos no son normales.** Jarque-Bera y Shapiro-Wilk rechazan
+      normalidad con p-valor 0. La curtosis alta indica colas pesadas: los
+      eventos extremos ocurren más frecuentemente de lo que la normal predice.
+      Esto justifica usar VaR histórico y Monte Carlo, no solo paramétrico.
+    - **La volatilidad se agrupa (volatility clustering).** Los modelos
+      GARCH(1,1) capturan este fenómeno y muestran persistencia alta
+      (α+β ≈ 0.91), confirmando que los períodos agitados tardan semanas
+      en calmarse.
+    - **El portafolio superó al benchmark.** Rendimiento acumulado de 88.68%
+      vs 65.92% del S&P 500 en 3 años, con Alpha de Jensen positivo de 4.82%
+      y Sharpe de 1.10 superior al del índice.
+    - **El costo de superar al benchmark es mayor volatilidad.** El Tracking
+      Error de 12.38% y el Máximo Drawdown de -27% vs -19% del índice
+      confirman que concentrar en 3 acciones tech genera mayor rendimiento
+      pero también mayores caídas.
+    """)
+
+    st.markdown("### Lecciones aprendidas")
+    st.markdown("""
+    - **La validación es más importante que el cálculo.** Un modelo financiero
+      es tan bueno como los datos que consume. Pydantic garantiza que nunca
+      se ejecuta matemática sobre datos inconsistentes.
+    - **La arquitectura debe ser auditable.** La documentación automática de
+      FastAPI en `/docs` expone todos los contratos de la API sin trabajo
+      manual adicional.
+    - **Los modelos son aproximaciones.** VaR asume distribuciones, CAPM
+      asume linealidad, Markowitz asume que el pasado representa el futuro.
+      El valor del sistema no está en tener la respuesta correcta, sino en
+      tener una infraestructura reproducible para hacer las preguntas.
+    """)
+
+    st.markdown("### Próximos pasos")
+    st.markdown("""
+    - **Backtesting del VaR con test de Kupiec** — validar si el número de
+      excepciones observadas coincide con el nivel de confianza teórico.
+    - **Dockerización del stack completo** — empaquetar backend y frontend
+      en contenedores para despliegue reproducible.
+    - **Testing automatizado con pytest** — cubrir los servicios de `services.py`
+      con pruebas unitarias.
+    - **Despliegue en la nube** (Railway, Render) para acceso público al tablero.
+    """)
+
+    st.markdown("---")
+    st.info(
+        "**Proyecto desarrollado por Cristian Vallejo** · Universidad Santo Tomás · "
+        "Materias integradas: Teoría del Riesgo + Electiva Python para APIs e IA · "
+        "Profesor: Javier Mauricio Sierra · 2026-1",
+        icon="🎓",
+    )
