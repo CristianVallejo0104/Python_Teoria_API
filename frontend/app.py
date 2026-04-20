@@ -304,7 +304,6 @@ tabs = st.tabs([
     "⚡ Mód.6 Markowitz",
     "🚦 Mód.7 Señales",
     "🌐 Mód.8 Macro",
-    "📋 Conclusiones",
 ])
  
 # ══════════════════════════════════════════════════════════════════════════════
@@ -556,8 +555,8 @@ with tabs[2]:
             fig_rend = go.Figure()
             fig_rend.add_trace(go.Scatter(
                 x=df_r["fecha"], y=df_r["rendimiento_log"] * 100,
-                name="Rend. log diario", line=dict(color="#3D008D", width=0.8),
-                fill="tozeroy", fillcolor="rgba(61,0,141,0.08)",
+                name="Rend. log diario", line=dict(color="#A78BFA", width=0.8),
+                fill="tozeroy", fillcolor="rgba(167,139,250,0.08)",
             ))
             fig_rend.update_layout(
                 title="Serie de rendimientos log diarios (%)",
@@ -581,7 +580,7 @@ with tabs[2]:
             ))
             fig_hist.add_trace(go.Scatter(
                 x=x_norm, y=y_norm, name="Normal teórica",
-                line=dict(color="#3D008D", width=2),
+                line=dict(color="#818CF8", width=2),
             ))
             fig_hist.update_layout(title="Distribución de rendimientos vs normal",
                                    height=300)
@@ -603,7 +602,7 @@ with tabs[2]:
             fig_qq.add_trace(go.Scatter(
                 x=cuantiles_teo, y=list(rend_sorted),
                 mode="markers", name="Datos",
-                marker=dict(color="#6366F1", size=3, opacity=0.6),
+                marker=dict(color="#A5B4FC", size=3, opacity=0.8),
             ))
             fig_qq.add_trace(go.Scatter(
                 x=[min(cuantiles_teo), max(cuantiles_teo)],
@@ -697,7 +696,7 @@ with tabs[3]:
                 x=df_rend_g["fecha"],
                 y=df_rend_g["rendimiento_log"].abs() * 100,
                 name="|Rendimiento| diario",
-                line=dict(color="rgba(61,0,141,0.3)", width=0.7),
+                line=dict(color="rgba(150,150,255,0.5)", width=0.8),
             ))
             fig_vol.add_trace(go.Scatter(
                 x=df_rend_g["fecha"], y=df_rend_g["vol_movil"],
@@ -840,7 +839,7 @@ with tabs[4]:
             fig_sml.add_trace(go.Scatter(
                 x=betas_sml, y=rend_sml,
                 name="Security Market Line",
-                line=dict(color="#3D008D", width=2),
+                line=dict(color="#818CF8", width=2),
             ))
             for _, row in df_capm.iterrows():
                 fig_sml.add_trace(go.Scatter(
@@ -911,7 +910,7 @@ with tabs[5]:
             fig_var = go.Figure()
             fig_var.add_trace(go.Bar(x=metodos, y=vars_pct,
                 name=f"VaR {confianza_var*100:.0f}%",
-                marker_color="#3D008D"))
+                marker_color="#818CF8"))
             fig_var.add_trace(go.Bar(x=metodos, y=cvars_pct,
                 name="CVaR (Expected Shortfall)",
                 marker_color="#ED1E79"))
@@ -999,7 +998,7 @@ with tabs[6]:
                 mode="markers", name="Portafolios simulados",
                 marker=dict(
                     color=nube["ratio_sharpe"],
-                    colorscale="Viridis", size=4, opacity=0.5,
+                    colorscale="Plasma", size=5, opacity=0.7,
                     colorbar=dict(title="Sharpe"),
                 ),
             ))
@@ -1027,7 +1026,7 @@ with tabs[6]:
                 x=[mv["volatilidad_anual"]], y=[mv["rendimiento_anual"]],
                 mode="markers+text", name="Mín. Varianza 🔵",
                 text=["Mín. Varianza"], textposition="top right",
-                marker=dict(color="#3D008D", size=12, symbol="diamond"),
+                marker=dict(color="#38BDF8", size=12, symbol="diamond"),
             ))
  
             fig_mk.update_layout(
@@ -1273,81 +1272,3 @@ with tabs[8]:
                     - **Máximo Drawdown:** la mayor caída desde un pico histórico.
                       Mide el peor escenario vivido. Un inversionista debe poder tolerarlo.
                     """)
-
-# ══════════════════════════════════════════════════════════════════════════════
-# PESTAÑA CONCLUSIONES
-# ══════════════════════════════════════════════════════════════════════════════
-
-with tabs[9]:
-    st.subheader("📋 Conclusiones del Proyecto")
-
-    st.markdown("### Conclusiones técnicas — Ingeniería de Software")
-    st.markdown("""
-    - **Arquitectura desacoplada funcional.** El frontend Streamlit consume el
-      backend FastAPI exclusivamente por HTTP. Esto permite que cada capa se
-      pueda cambiar o testear independientemente.
-    - **Validación robusta con Pydantic v2.** Cada request pasa por validadores
-      de tipo, rango y consistencia cruzada antes de llegar a la lógica de
-      cálculo. Eso previene errores en tiempo de ejecución y documenta
-      automáticamente los contratos de datos en `/docs`.
-    - **Inyección de dependencias con `Depends()`.** Los endpoints no instancian
-      servicios — los reciben inyectados. Esto facilita testing y permite
-      reemplazar implementaciones sin tocar las rutas.
-    - **Consumo de APIs externas en tiempo real.** Yahoo Finance para precios
-      y FRED para datos macroeconómicos. La tasa libre de riesgo y la
-      inflación se actualizan automáticamente al hacer cada request.
-    - **Decoradores personalizados.** `@timing_decorator` y `@cache_result`
-      loggean tiempos de ejecución y cachean llamadas costosas.
-    """)
-
-    st.markdown("### Conclusiones cuantitativas — Hallazgos del portafolio")
-    st.markdown("""
-    - **Los rendimientos no son normales.** Jarque-Bera y Shapiro-Wilk rechazan
-      normalidad con p-valor 0. La curtosis alta indica colas pesadas: los
-      eventos extremos ocurren más frecuentemente de lo que la normal predice.
-      Esto justifica usar VaR histórico y Monte Carlo, no solo paramétrico.
-    - **La volatilidad se agrupa (volatility clustering).** Los modelos
-      GARCH(1,1) capturan este fenómeno y muestran persistencia alta
-      (α+β ≈ 0.91), confirmando que los períodos agitados tardan semanas
-      en calmarse.
-    - **El portafolio superó al benchmark.** Rendimiento acumulado de 88.68%
-      vs 65.92% del S&P 500 en 3 años, con Alpha de Jensen positivo de 4.82%
-      y Sharpe de 1.10 superior al del índice.
-    - **El costo de superar al benchmark es mayor volatilidad.** El Tracking
-      Error de 12.38% y el Máximo Drawdown de -27% vs -19% del índice
-      confirman que concentrar en 3 acciones tech genera mayor rendimiento
-      pero también mayores caídas.
-    """)
-
-    st.markdown("### Lecciones aprendidas")
-    st.markdown("""
-    - **La validación es más importante que el cálculo.** Un modelo financiero
-      es tan bueno como los datos que consume. Pydantic garantiza que nunca
-      se ejecuta matemática sobre datos inconsistentes.
-    - **La arquitectura debe ser auditable.** La documentación automática de
-      FastAPI en `/docs` expone todos los contratos de la API sin trabajo
-      manual adicional.
-    - **Los modelos son aproximaciones.** VaR asume distribuciones, CAPM
-      asume linealidad, Markowitz asume que el pasado representa el futuro.
-      El valor del sistema no está en tener la respuesta correcta, sino en
-      tener una infraestructura reproducible para hacer las preguntas.
-    """)
-
-    st.markdown("### Próximos pasos")
-    st.markdown("""
-    - **Backtesting del VaR con test de Kupiec** — validar si el número de
-      excepciones observadas coincide con el nivel de confianza teórico.
-    - **Dockerización del stack completo** — empaquetar backend y frontend
-      en contenedores para despliegue reproducible.
-    - **Testing automatizado con pytest** — cubrir los servicios de `services.py`
-      con pruebas unitarias.
-    - **Despliegue en la nube** (Railway, Render) para acceso público al tablero.
-    """)
-
-    st.markdown("---")
-    st.info(
-        "**Proyecto desarrollado por Cristian Vallejo** · Universidad Santo Tomás · "
-        "Materias integradas: Teoría del Riesgo + Electiva Python para APIs e IA · "
-        "Profesor: Javier Mauricio Sierra · 2026-1",
-        icon="🎓",
-    )
