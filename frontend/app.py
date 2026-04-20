@@ -944,7 +944,7 @@ with tabs[5]:
 with tabs[6]:
     st.subheader("⚡ Optimización de Markowitz — Frontera Eficiente")
  
-    n_port = st.slider("Portafolios a simular", 1000, 10000, 5000, step=1000)
+    n_port = st.slider("Portafolios a simular", 1000, 30000, 5000, step=1000)
  
     if st.button("🔄 Construir frontera eficiente", key="btn_markowitz"):
         with st.spinner(f"Simulando {n_port:,} portafolios..."):
